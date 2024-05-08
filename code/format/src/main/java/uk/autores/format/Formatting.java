@@ -151,9 +151,9 @@ public final class Formatting {
             checkExhausted(sequence, end);
             return newVar(sequence, offset, end, index, type, style);
         }
-        if (end == sequence.length() || sequence.charAt(end) != '}') {
-            throw new IllegalArgumentException("Expected } at index " + end);
-        }
+//        if (end == sequence.length() || sequence.charAt(end) != '}') {
+//            throw new IllegalArgumentException("Expected } at index " + end);
+//        }
         return newVar(sequence, offset, end + 1, index, type, style, subformat);
     }
 

@@ -15,6 +15,7 @@ public final class TestStrings {
                 "''foo''",
                 "foo bar baz",
                 "C''est la vie",
+                "foo 'bar'",
                 // args
                 "{0}",
                 "{1}",
@@ -60,6 +61,9 @@ public final class TestStrings {
                 "{0,number,currency",
                 "{0,foobar}",
                 "{0,number,'}",
+                "{}",
+                "{,",
+                "{0,number,##",
         };
     }
 }

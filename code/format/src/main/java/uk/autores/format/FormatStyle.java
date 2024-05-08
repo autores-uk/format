@@ -2,6 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 package uk.autores.format;
 
+/**
+ * Format styles supported by the various {@link FormatType}s.
+ *
+ * @see FormatType#styles()
+ */
 public enum FormatStyle {
     NONE("(none)"),
     SUBFORMAT("(subformat)"),

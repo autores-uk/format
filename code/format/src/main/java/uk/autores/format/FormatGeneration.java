@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * To be used in code generation.
+ */
 public final class FormatGeneration {
     private static final String[] ESCS = generateEscapes();
 

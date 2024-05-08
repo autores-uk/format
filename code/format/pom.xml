@@ -123,8 +123,8 @@
                 <configuration>
                     <bottom>
                         <![CDATA[
-                        Copyright 2023
-                        <a href="https://github.com/autores-uk/autores/blob/main/LICENSE.txt">https://github.com/autores-uk/autores/blob/main/LICENSE.txt</a>
+                        Copyright 2024
+                        <a href="https://github.com/autores-uk/format/blob/main/LICENSE.txt">https://github.com/autores-uk/format/blob/main/LICENSE.txt</a>
                         ]]>
                     </bottom>
                     <doclint>all</doclint>
@@ -164,7 +164,7 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.90</minimum>
+                                            <minimum>0.98</minimum>
                                         </limit>
                                     </limits>
                                 </rule>

@@ -224,10 +224,10 @@ public class FormattingTest {
         for (String t : TestStrings.invalid()) {
             Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> {
                 new MessageFormat(t);
-            });
+            }, t);
             Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> {
                 Formatting.parse(t);
-            });
+            }, t);
         }
     }
 }
