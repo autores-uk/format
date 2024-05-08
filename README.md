@@ -1,3 +1,6 @@
+[![Build](https://github.com/autores-uk/format/actions/workflows/ci.yaml/badge.svg)](https://github.com/autores-uk/format/actions/workflows/ci.yaml)
+[![Document](https://github.com/autores-uk/format/actions/workflows/docs.yaml/badge.svg)](https://github.com/autores-uk/format/actions/workflows/docs.yaml)
+
 # AutoRes Format
 
 An alternative implementation of `java.text.MessageFormat`.
