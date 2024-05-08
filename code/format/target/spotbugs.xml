@@ -1,0 +1,2 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<BugCollection version='4.8.3' threshold='low' effort='max'><Error></Error><Project><SrcDir>/home/autores/projects/format/code/format/src/main/java</SrcDir><SrcDir>/home/autores/projects/format/code/format/target/generated-sources/annotations</SrcDir><SrcDir>/home/autores/projects/format/code/format/src/test/java</SrcDir><SrcDir>/home/autores/projects/format/code/format/target/generated-test-sources/test-annotations</SrcDir></Project></BugCollection>

@@ -1,0 +1,473 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Formatting.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">AutoRes.uk Format</a> &gt; <a href="index.source.html" class="el_package">uk.autores.format</a> &gt; <span class="el_source">Formatting.java</span></div><h1>Formatting.java</h1><pre class="source lang-java linenums">package uk.autores.format;
+
+import java.text.*;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.*;
+
+/**
+ * Static formatting methods.
+ */
+public final class Formatting {
+    private Formatting() {}
+
+    /**
+     * Parses {@link MessageFormat} expression into component parts.
+     *
+     * @param seq format string
+     * @return immutable list of component parts
+     */
+    public static List&lt;FormatSegment&gt; parse(CharSequence seq) {
+<span class="fc" id="L23">        List&lt;FormatSegment&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L24">        int offset = 0;</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">        for (int i = 0; i &lt; seq.length(); i++) {</span>
+<span class="fc" id="L26">            char ch = seq.charAt(i);</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">            if (ch == '\'') {</span>
+<span class="fc" id="L28">                addRaw(list, seq, offset, i);</span>
+<span class="fc" id="L29">                FormatSegment segment = parseEscaped(seq, i);</span>
+<span class="fc" id="L30">                list.add(segment);</span>
+<span class="fc" id="L31">                rationalize(list);</span>
+<span class="fc" id="L32">                i += segment.raw().length();</span>
+<span class="fc" id="L33">                offset = i;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">            } else if (ch == '{') {</span>
+<span class="fc" id="L35">                addRaw(list, seq, offset, i);</span>
+<span class="fc" id="L36">                rationalize(list);</span>
+<span class="fc" id="L37">                FormatSegment segment = parseVariable(seq, i);</span>
+<span class="fc" id="L38">                list.add(segment);</span>
+<span class="fc" id="L39">                i += segment.raw().length();</span>
+<span class="fc" id="L40">                offset = i;</span>
+            }
+        }
+<span class="fc bfc" id="L43" title="All 2 branches covered.">        if (offset &lt; seq.length()) {</span>
+<span class="fc" id="L44">            addRaw(list, seq, offset, seq.length());</span>
+<span class="fc" id="L45">            rationalize(list);</span>
+        }
+<span class="fc" id="L47">        argumentTypesByIndex(list);</span>
+<span class="fc" id="L48">        return Lists.immutable(list);</span>
+    }
+
+    private static void rationalize(List&lt;FormatSegment&gt; segments) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (segments.size() &gt; 1) {</span>
+<span class="fc" id="L53">            int i0 = segments.size() - 1;</span>
+<span class="fc" id="L54">            FormatSegment s0 = segments.get(i0);</span>
+<span class="fc" id="L55">            int i1 = segments.size() - 2;</span>
+<span class="fc" id="L56">            FormatSegment s1 = segments.get(i1);</span>
+<span class="pc bpc" id="L57" title="1 of 4 branches missed.">            if (s0 instanceof FormatLiteral &amp;&amp; s1 instanceof FormatLiteral) {</span>
+<span class="fc" id="L58">                segments.remove(i0);</span>
+<span class="fc" id="L59">                segments.remove(i1);</span>
+<span class="fc" id="L60">                FormatLiteral l0 = (FormatLiteral) s0;</span>
+<span class="fc" id="L61">                FormatLiteral l1 = (FormatLiteral) s1;</span>
+<span class="fc" id="L62">                FormatLiteral combined = new FormatLiteral(</span>
+<span class="fc" id="L63">                        l1.raw() + l0.raw(),</span>
+<span class="fc" id="L64">                        l1.processed() + l0.processed()</span>
+                );
+<span class="fc" id="L66">                segments.add(combined);</span>
+            }
+        }
+<span class="fc" id="L69">    }</span>
+
+    private static void addRaw(List&lt;FormatSegment&gt; list, CharSequence seq, int start, int end) {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (end - start &gt; 0) {</span>
+<span class="fc" id="L73">            String raw = seq.subSequence(start, end).toString();</span>
+<span class="fc" id="L74">            list.add(new FormatLiteral(raw, raw));</span>
+        }
+<span class="fc" id="L76">    }</span>
+
+    private static FormatLiteral parseEscaped(CharSequence seq, int offset) {
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (isEscapedQuote(seq, offset)) {</span>
+<span class="fc" id="L80">            return new FormatLiteral(&quot;''&quot;, &quot;'&quot;);</span>
+        }
+<span class="fc" id="L82">        StringBuilder buf = new StringBuilder();</span>
+<span class="fc" id="L83">        int end = offset;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        for (int i = offset + 1; i &lt; seq.length(); i++, end++) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">            if (isEscapedQuote(seq, i)) {</span>
+<span class="fc" id="L86">                buf.append('\'');</span>
+<span class="fc" id="L87">                i++;</span>
+<span class="fc" id="L88">                end++;</span>
+<span class="fc" id="L89">                continue;</span>
+            }
+<span class="fc" id="L91">            char ch = seq.charAt(i);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">            if (ch == '\'') {</span>
+<span class="fc" id="L93">                end++;</span>
+<span class="fc" id="L94">                break;</span>
+            }
+<span class="fc" id="L96">            buf.append(ch);</span>
+        }
+<span class="fc" id="L98">        String raw = seq.subSequence(offset, end + 1).toString();</span>
+<span class="fc" id="L99">        return new FormatLiteral(raw, buf.toString());</span>
+    }
+
+    private static boolean isEscapedQuote(CharSequence sequence, int offset) {
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        if (sequence.length() != offset + 1) {</span>
+<span class="fc" id="L104">            char ch0 = sequence.charAt(offset);</span>
+<span class="fc" id="L105">            char ch1 = sequence.charAt(offset + 1);</span>
+<span class="fc bfc" id="L106" title="All 4 branches covered.">            return ch0 == '\'' &amp;&amp; ch1 == '\'';</span>
+        }
+<span class="fc" id="L108">        return false;</span>
+    }
+
+    private static FormatVariable parseVariable(CharSequence sequence, int offset) {
+<span class="fc" id="L112">        int index = 0;</span>
+<span class="fc" id="L113">        int initial = offset + 1;</span>
+<span class="fc" id="L114">        int typeOffset = 0;</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">        for (int i = initial; i &lt; sequence.length(); i++) {</span>
+<span class="fc" id="L116">            char ch = sequence.charAt(i);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">            if (Character.isDigit(ch)) {</span>
+<span class="fc" id="L118">                int digit = ch - '0';</span>
+<span class="fc" id="L119">                index = index * 10 + digit;</span>
+<span class="pc bpc" id="L120" title="1 of 4 branches missed.">            } else if (ch == '}' &amp;&amp; i != initial) {</span>
+<span class="fc" id="L121">                return newVar(sequence, offset, i + 1, index);</span>
+<span class="pc bpc" id="L122" title="1 of 4 branches missed.">            } else if (ch == ',' &amp;&amp; i != initial) {</span>
+<span class="fc" id="L123">                typeOffset = i + 1;</span>
+<span class="fc" id="L124">                break;</span>
+            } else {
+<span class="fc" id="L126">                throw new IllegalArgumentException(&quot;Unexpected char &quot; + ch + &quot; at &quot; + i);</span>
+            }
+        }
+<span class="fc" id="L129">        FormatType type = detectType(sequence, typeOffset);</span>
+<span class="fc" id="L130">        int next = typeOffset + type.label().length();</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if (next &gt;= sequence.length()) {</span>
+<span class="fc" id="L132">            throw new IllegalArgumentException(&quot;Expected character at index &quot; + next);</span>
+        }
+<span class="fc" id="L134">        char delim = sequence.charAt(next);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        if (delim == '}') {</span>
+<span class="fc" id="L136">            return newVar(sequence, offset, next + 1, index, type);</span>
+        }
+<span class="fc bfc" id="L138" title="All 2 branches covered.">        if (delim != ',') {</span>
+<span class="fc" id="L139">            throw new IllegalArgumentException(&quot;Unexpected char &quot; + delim + &quot; at &quot; + next);</span>
+        }
+<span class="fc" id="L141">        FormatStyle style = detectStyle(type, sequence, next + 1);</span>
+        String subformat;
+        int end;
+<span class="fc bfc" id="L144" title="All 2 branches covered.">        if (style == FormatStyle.SUBFORMAT) {</span>
+<span class="fc" id="L145">            subformat = parseSubformat(sequence, next + 1);</span>
+<span class="fc" id="L146">            end = next + 1 + subformat.length();</span>
+        } else {
+<span class="fc" id="L148">            end = next + 2 + style.label().length();</span>
+<span class="fc" id="L149">            checkExhausted(sequence, end);</span>
+<span class="fc" id="L150">            return newVar(sequence, offset, end, index, type, style);</span>
+        }
+<span class="pc bpc" id="L152" title="2 of 4 branches missed.">        if (end == sequence.length() || sequence.charAt(end) != '}') {</span>
+<span class="nc" id="L153">            throw new IllegalArgumentException(&quot;Expected } at index &quot; + end);</span>
+        }
+<span class="fc" id="L155">        return newVar(sequence, offset, end + 1, index, type, style, subformat);</span>
+    }
+
+    private static void checkExhausted(CharSequence sequence, int end) {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        if (end &gt; sequence.length()) {</span>
+<span class="fc" id="L160">            throw new IllegalArgumentException(&quot;Unexpected end of sequence&quot;);</span>
+        }
+<span class="fc" id="L162">    }</span>
+
+    private static FormatType detectType(CharSequence sequence, int offset) {
+<span class="fc bfc" id="L165" title="All 2 branches covered.">        for (FormatType type : FormatType.values()) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">            if (type == FormatType.NONE) {</span>
+<span class="fc" id="L167">                continue;</span>
+            }
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            if (matches(sequence, offset, type.label())) {</span>
+<span class="fc" id="L170">                return type;</span>
+            }
+        }
+<span class="fc" id="L173">        throw new IllegalArgumentException(&quot;Expected format type at &quot; + offset);</span>
+    }
+
+    private static FormatStyle detectStyle(FormatType type, CharSequence sequence, int offset) {
+<span class="fc bfc" id="L177" title="All 2 branches covered.">        for (FormatStyle s : type.styles()) {</span>
+<span class="fc bfc" id="L178" title="All 4 branches covered.">            if (s == FormatStyle.NONE || s == FormatStyle.SUBFORMAT) {</span>
+<span class="fc" id="L179">                continue;</span>
+            }
+<span class="fc bfc" id="L181" title="All 2 branches covered.">            if (matches(sequence, offset, s.label())) {</span>
+<span class="fc" id="L182">                return s;</span>
+            }
+<span class="fc" id="L184">        }</span>
+<span class="fc" id="L185">        return FormatStyle.SUBFORMAT;</span>
+    }
+
+    private static String parseSubformat(CharSequence sequence, int offset) {
+<span class="fc" id="L189">        StringBuilder buf = new StringBuilder();</span>
+<span class="fc" id="L190">        int nested = 0;</span>
+<span class="fc" id="L191">        boolean quoted = false;</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">        for (int i = offset; i &lt; sequence.length(); i++) {</span>
+<span class="fc" id="L193">            char ch = sequence.charAt(i);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">            if (ch == '\'') {</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">                quoted = !quoted;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">            } else if (!quoted) {</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">                if (ch == '{') {</span>
+<span class="fc" id="L198">                    nested++;</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">                } else if (ch == '}') {</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">                    if (nested == 0) {</span>
+<span class="fc" id="L201">                        return buf.toString();</span>
+                    } else {
+<span class="fc" id="L203">                        nested--;</span>
+                    }
+                }
+            }
+<span class="fc" id="L207">            buf.append(ch);</span>
+        }
+<span class="fc" id="L209">        throw new IllegalArgumentException(&quot;Expected } before index &quot; + sequence.length());</span>
+    }
+
+    private static boolean matches(CharSequence source, int offset, String expected) {
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        if ((source.length() - offset) &lt; expected.length()) {</span>
+<span class="fc" id="L214">            return false;</span>
+        }
+<span class="fc bfc" id="L216" title="All 2 branches covered.">        for (int i = 0; i &lt; expected.length(); i++) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">            if (source.charAt(i + offset) != expected.charAt(i)) {</span>
+<span class="fc" id="L218">                return false;</span>
+            }
+        }
+<span class="fc" id="L221">        return true;</span>
+    }
+
+    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index) {
+<span class="fc" id="L225">        return newVar(sequence, offset, end, index, FormatType.NONE, FormatStyle.NONE, &quot;&quot;);</span>
+    }
+
+    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FormatType type) {
+<span class="fc" id="L229">        return newVar(sequence, offset, end, index, type, FormatStyle.NONE, &quot;&quot;);</span>
+    }
+
+    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FormatType type, FormatStyle style) {
+<span class="fc" id="L233">        return newVar(sequence, offset, end, index, type, style, &quot;&quot;);</span>
+    }
+
+    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FormatType type, FormatStyle style, String subformat) {
+<span class="fc" id="L237">        String raw = sequence.subSequence(offset, end).toString();</span>
+<span class="fc" id="L238">        FormatVariable v = new FormatVariable(raw, index, type, style, subformat);</span>
+<span class="fc" id="L239">        validate(v);</span>
+<span class="fc" id="L240">        return v;</span>
+    }
+
+    private static void validate(FormatVariable v) {
+<span class="fc bfc" id="L244" title="All 2 branches covered.">        if (v.style() != FormatStyle.SUBFORMAT) {</span>
+<span class="fc" id="L245">            return;</span>
+        }
+<span class="fc" id="L247">        String pattern = v.subformat();</span>
+<span class="fc" id="L248">        Locale l = Locale.ENGLISH;</span>
+<span class="pc bpc" id="L249" title="1 of 4 branches missed.">        switch (v.type()) {</span>
+            case NUMBER:
+<span class="fc" id="L251">                new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(l));</span>
+<span class="fc" id="L252">                break;</span>
+            case DATE:
+            case TIME:
+<span class="fc" id="L255">                new SimpleDateFormat(pattern, l);</span>
+<span class="fc" id="L256">                break;</span>
+            case CHOICE:
+<span class="fc" id="L258">                new ChoiceFormat(pattern);</span>
+<span class="fc" id="L259">                break;</span>
+            default:
+                break;
+        }
+<span class="fc" id="L263">    }</span>
+
+    /**
+     * The number of arguments referenced by {@link FormatVariable}s in the expression.
+     *
+     * @param expression expression components
+     * @return argument count or zero if there are no variables
+     */
+    public static int argumentCount(List&lt;? extends FormatSegment&gt; expression) {
+<span class="fc" id="L272">        int max = 0;</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">        for (FormatSegment segment : expression) {</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">            if (!(segment instanceof FormatVariable)) {</span>
+<span class="fc" id="L275">                continue;</span>
+            }
+<span class="fc" id="L277">            FormatVariable v = (FormatVariable) segment;</span>
+<span class="fc" id="L278">            int n = v.index() + 1;</span>
+<span class="fc" id="L279">            max = Math.max(max, n);</span>
+<span class="fc" id="L280">        }</span>
+<span class="fc" id="L281">        return max;</span>
+    }
+
+    /**
+     * The mapped argument types as dictated by {@link FormatType#argType()}.
+     *
+     * @param expression expression segments
+     * @return immutable list of types
+     */
+    public static List&lt;Class&lt;?&gt;&gt; argumentTypesByIndex(List&lt;FormatSegment&gt; expression) {
+<span class="fc" id="L291">        Class&lt;?&gt;[] results = new Class&lt;?&gt;[argumentCount(expression)];</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">        for (FormatSegment segment : expression) {</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (segment instanceof FormatVariable) {</span>
+<span class="fc" id="L294">                FormatVariable v = (FormatVariable) segment;</span>
+<span class="fc" id="L295">                int index = v.index();</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">                if (results[index] == null) {</span>
+<span class="fc" id="L297">                    results[index] = v.type().argType();</span>
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">                } else if (results[index] != v.type().argType()) {</span>
+<span class="nc" id="L299">                    String msg = results[index] + &quot; does not match &quot; + v.type().argType() + &quot; at index &quot; + index;</span>
+<span class="nc" id="L300">                    throw new IllegalArgumentException(msg);</span>
+                }
+            }
+<span class="fc" id="L303">        }</span>
+<span class="fc" id="L304">        return Lists.immutable(Arrays.asList(results));</span>
+    }
+
+    /**
+     * Useful for testing and resultant string size estimation.
+     *
+     * @param segments expression segments
+     * @return sample arguments
+     * @see FormatType#argType()
+     */
+    public static Object[] exampleArguments(List&lt;FormatSegment&gt; segments) {
+<span class="fc" id="L315">        Object[] args = new Object[argumentCount(segments)];</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">        for (FormatSegment segment : segments) {</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">            if (segment instanceof FormatVariable) {</span>
+<span class="fc" id="L318">                FormatVariable v = (FormatVariable) segment;</span>
+<span class="fc" id="L319">                int index = v.index();</span>
+<span class="pc bpc" id="L320" title="1 of 4 branches missed.">                switch (v.type()) {</span>
+                    case NONE:
+<span class="fc" id="L322">                        args[index] = &quot;foo bar baz&quot;;</span>
+<span class="fc" id="L323">                        break;</span>
+                    case NUMBER:
+                    case CHOICE:
+<span class="fc" id="L326">                        args[index] = 10_000_000;</span>
+<span class="fc" id="L327">                        break;</span>
+                    case DATE:
+                    case TIME:
+<span class="fc" id="L330">                        ZoneId utc = ZoneId.of(&quot;UTC&quot;);</span>
+<span class="fc" id="L331">                        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.EPOCH, utc);</span>
+<span class="fc" id="L332">                        args[index] = ZonedDateTime.of(ldt, utc);</span>
+                        break;
+                }
+            }
+<span class="fc" id="L336">        }</span>
+<span class="fc" id="L337">        return args;</span>
+    }
+
+    /**
+     * Static format implementation.
+     * Approximates behaviour of {@link MessageFormat#format(String, Object...)}.
+     *
+     * @param expression expression segments
+     * @param l locale
+     * @param args arguments
+     * @return formatted string
+     */
+    public static String format(List&lt;FormatSegment&gt; expression, Locale l, Object...args) {
+<span class="fc" id="L350">        StringBuffer buf = new StringBuffer();</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        for (FormatSegment segment : expression) {</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">            if (segment instanceof FormatLiteral) {</span>
+<span class="fc" id="L353">                buf.append(((FormatLiteral) segment).processed());</span>
+            }
+<span class="fc bfc" id="L355" title="All 2 branches covered.">            if (segment instanceof FormatVariable) {</span>
+<span class="fc" id="L356">                formatVar(l, buf, (FormatVariable) segment, args);</span>
+            }
+<span class="fc" id="L358">        }</span>
+<span class="fc" id="L359">        return buf.toString();</span>
+    }
+
+    private static void formatVar(Locale l, StringBuffer buf, FormatVariable variable, Object...args) {
+<span class="fc" id="L363">        Object value = args[variable.index()];</span>
+<span class="fc bfc" id="L364" title="All 5 branches covered.">        switch (variable.type()) {</span>
+            case NUMBER:
+<span class="fc" id="L366">                number(l, variable).format(value, buf, new FieldPosition(0));</span>
+<span class="fc" id="L367">                break;</span>
+            case DATE:
+<span class="fc" id="L369">                formatDate(buf, date(l, variable), value);</span>
+<span class="fc" id="L370">                break;</span>
+            case TIME:
+<span class="fc" id="L372">                formatDate(buf, time(l, variable), value);</span>
+<span class="fc" id="L373">                break;</span>
+            case CHOICE:
+<span class="fc" id="L375">                formatChoice(l, buf, variable, value, args);</span>
+<span class="fc" id="L376">                break;</span>
+            default:
+<span class="fc" id="L378">                buf.append(value);</span>
+                break;
+        }
+<span class="fc" id="L381">    }</span>
+
+    private static NumberFormat number(Locale l, FormatVariable variable) {
+<span class="fc bfc" id="L384" title="All 5 branches covered.">        switch (variable.style()) {</span>
+            case INTEGER:
+<span class="fc" id="L386">                return NumberFormat.getIntegerInstance(l);</span>
+            case CURRENCY:
+<span class="fc" id="L388">                return NumberFormat.getCurrencyInstance(l);</span>
+            case PERCENT:
+<span class="fc" id="L390">                return NumberFormat.getPercentInstance(l);</span>
+            case SUBFORMAT:
+<span class="fc" id="L392">                return new DecimalFormat(variable.subformat(), DecimalFormatSymbols.getInstance(l));</span>
+        }
+<span class="fc" id="L394">        return NumberFormat.getInstance(l);</span>
+    }
+
+    private static DateFormat date(Locale l, FormatVariable variable) {
+<span class="fc bfc" id="L398" title="All 6 branches covered.">        switch (variable.style()) {</span>
+            case SHORT:
+<span class="fc" id="L400">                return DateFormat.getDateInstance(DateFormat.SHORT, l);</span>
+            case MEDIUM:
+<span class="fc" id="L402">                return DateFormat.getDateInstance(DateFormat.MEDIUM, l);</span>
+            case LONG:
+<span class="fc" id="L404">                return DateFormat.getDateInstance(DateFormat.LONG, l);</span>
+            case FULL:
+<span class="fc" id="L406">                return DateFormat.getDateInstance(DateFormat.FULL, l);</span>
+            case SUBFORMAT:
+<span class="fc" id="L408">                return new SimpleDateFormat(variable.subformat(), l);</span>
+        }
+<span class="fc" id="L410">        return DateFormat.getDateInstance(DateFormat.DEFAULT, l);</span>
+    }
+
+    private static DateFormat time(Locale l, FormatVariable variable) {
+<span class="fc bfc" id="L414" title="All 6 branches covered.">        switch (variable.style()) {</span>
+            case SHORT:
+<span class="fc" id="L416">                return DateFormat.getTimeInstance(DateFormat.SHORT, l);</span>
+            case MEDIUM:
+<span class="fc" id="L418">                return DateFormat.getTimeInstance(DateFormat.MEDIUM, l);</span>
+            case LONG:
+<span class="fc" id="L420">                return DateFormat.getTimeInstance(DateFormat.LONG, l);</span>
+            case FULL:
+<span class="fc" id="L422">                return DateFormat.getTimeInstance(DateFormat.FULL, l);</span>
+            case SUBFORMAT:
+<span class="fc" id="L424">                return new SimpleDateFormat(variable.subformat(), l);</span>
+        }
+<span class="fc" id="L426">        return DateFormat.getTimeInstance(DateFormat.DEFAULT, l);</span>
+    }
+
+    private static void formatDate(StringBuffer buf, DateFormat df, Object value) {
+<span class="fc bfc" id="L430" title="All 2 branches covered.">        if (value instanceof ZonedDateTime) {</span>
+<span class="fc" id="L431">            ZonedDateTime zdt = (ZonedDateTime) value;</span>
+<span class="fc" id="L432">            ZoneId zoneId = zdt.getZone();</span>
+<span class="fc" id="L433">            TimeZone zone = TimeZone.getTimeZone(zoneId);</span>
+<span class="fc" id="L434">            df.setTimeZone(zone);</span>
+<span class="fc" id="L435">            value = new Date(zdt.toEpochSecond());</span>
+        }
+<span class="fc" id="L437">        df.format(value, buf, new FieldPosition(0));</span>
+<span class="fc" id="L438">    }</span>
+
+    private static void formatChoice(Locale l, StringBuffer buf, FormatVariable variable, Object value, Object...args) {
+<span class="fc" id="L441">        ChoiceFormat format = new ChoiceFormat(variable.subformat());</span>
+<span class="fc" id="L442">        String choice = format.format(value);</span>
+        String result;
+<span class="fc bfc" id="L444" title="All 2 branches covered.">        if (choice.indexOf('{') &gt;= 0) {</span>
+<span class="fc" id="L445">            List&lt;FormatSegment&gt; recursive = parse(choice);</span>
+<span class="fc" id="L446">            result = format(recursive, l, args);</span>
+<span class="fc" id="L447">        } else {</span>
+<span class="fc" id="L448">            result = choice;</span>
+        }
+<span class="fc" id="L450">        buf.append(result);</span>
+<span class="fc" id="L451">    }</span>
+
+    /**
+     * Estimates the length of a formatted expression.
+     *
+     * @param expression expression segments
+     * @return an estimation of required buffer size
+     */
+    public static int estimateLength(List&lt;FormatSegment&gt; expression) {
+<span class="fc" id="L460">        Object[] args = exampleArguments(expression);</span>
+<span class="fc" id="L461">        String result = format(expression, Locale.ENGLISH, args);</span>
+<span class="fc" id="L462">        return normalize(result.length());</span>
+    }
+
+    private static int normalize(int n) {
+<span class="fc" id="L466">        int x = 8;</span>
+<span class="fc bfc" id="L467" title="All 2 branches covered.">        while (x &lt; n) {</span>
+<span class="fc" id="L468">            x *= 2;</span>
+        }
+<span class="fc" id="L470">        return x * 2;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

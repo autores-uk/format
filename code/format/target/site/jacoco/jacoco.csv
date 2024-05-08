@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+AutoRes.uk Format,uk.autores.format,FormatVariable,0,33,0,0,0,12,0,6,0,6
+AutoRes.uk Format,uk.autores.format,FormatLiteral,0,15,0,0,0,6,0,3,0,3
+AutoRes.uk Format,uk.autores.format,FormatSegment,0,24,0,2,0,7,0,5,0,4
+AutoRes.uk Format,uk.autores.format,Formatting,36,1127,8,142,3,251,8,104,0,28
+AutoRes.uk Format,uk.autores.format,FormatType,0,176,0,0,0,14,0,5,0,5
+AutoRes.uk Format,uk.autores.format,Lists,0,17,0,4,0,5,0,3,0,1
+AutoRes.uk Format,uk.autores.format,FormatStyle,0,114,0,0,0,14,0,3,0,3
+AutoRes.uk Format,uk.autores.format,FormatGeneration,0,586,2,37,0,125,2,35,0,11
