@@ -4,6 +4,7 @@ package uk.autores.format;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 import uk.autores.format.testing.TestEquality;
 import uk.autores.format.testing.TestStrings;
 
@@ -16,8 +17,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FormattingTest {
 
@@ -228,6 +228,21 @@ public class FormattingTest {
             Assertions.assertThrowsExactly(IllegalArgumentException.class, () -> {
                 Formatting.parse(t);
             }, t);
+        }
+    }
+
+    @Test
+    void noMixedTypes() {
+        String[] mixed = {
+                "{0} {0,number}",
+                "{0} {0,date}",
+                "{0,number} {0,time}",
+                "{0,choice} {0,date}",
+        };
+
+        for(String t : mixed) {
+            Executable e = () -> Formatting.parse(t);
+            assertThrowsExactly(IllegalArgumentException.class, e);
         }
     }
 }

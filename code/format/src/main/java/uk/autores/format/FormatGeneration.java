@@ -58,7 +58,7 @@ public final class FormatGeneration {
                 String escaped = escape(lit.processed());
                 String append = "buf.append(" + escaped + ");";
                 result.add(append);
-            } else if (segment instanceof FormatVariable) {
+            } else {
                 add(result, (FormatVariable) segment);
             }
         }
@@ -82,9 +82,6 @@ public final class FormatGeneration {
 
     private static void add(List<String> expressions, FormatVariable v) {
         switch (v.type()) {
-            case NONE:
-                none(expressions, v);
-                break;
             case NUMBER:
                 number(expressions, v);
                 break;
@@ -96,6 +93,9 @@ public final class FormatGeneration {
                 break;
             case CHOICE:
                 choice(expressions, v);
+                break;
+            default:
+                none(expressions, v);
                 break;
         }
     }

@@ -320,9 +320,6 @@ public final class Formatting {
                 FormatVariable v = (FormatVariable) segment;
                 int index = v.index();
                 switch (v.type()) {
-                    case NONE:
-                        args[index] = "foo bar baz";
-                        break;
                     case NUMBER:
                     case CHOICE:
                         args[index] = 10_000_000;
@@ -332,6 +329,9 @@ public final class Formatting {
                         ZoneId utc = ZoneId.of("UTC");
                         LocalDateTime ldt = LocalDateTime.ofInstant(Instant.EPOCH, utc);
                         args[index] = ZonedDateTime.of(ldt, utc);
+                        break;
+                    default:
+                        args[index] = "foo bar baz";
                         break;
                 }
             }

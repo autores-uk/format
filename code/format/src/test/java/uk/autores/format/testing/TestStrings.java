@@ -45,8 +45,12 @@ public final class TestStrings {
                 "{0,time,hh}",
                 "There {0,choice,0#are no files|1#is one file|1<are {0,number,integer} files}.",
                 // complex
-                "At {1,time} on {1,date}, there was {2} on planet {0,number,integer}.",
                 "{0} to {10}",
+                "{0} {0}",
+                "{0,number} {0,choice,0#foo|0<bar}",
+                "{0,date} {0,time}",
+                "At {1,time} on {1,date}, there was {2} on planet {0,number,integer}.",
+                // TODO "{0}{0}{0}",
         };
     }
 
