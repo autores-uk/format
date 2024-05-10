@@ -245,4 +245,12 @@ public class FormattingTest {
             assertThrowsExactly(IllegalArgumentException.class, e);
         }
     }
+
+    @Test
+    void conjoined() {
+        List<FormatSegment> expression = Formatting.parse("{0}{1}{2}");
+        for (FormatSegment fs : expression) {
+            assertInstanceOf(FormatVariable.class, fs);
+        }
+    }
 }

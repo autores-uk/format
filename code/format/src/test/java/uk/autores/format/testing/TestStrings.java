@@ -16,6 +16,7 @@ public final class TestStrings {
                 "foo bar baz",
                 "C''est la vie",
                 "foo 'bar'",
+                "'foo' 'bar' 'baz'",
                 // args
                 "{0}",
                 "{1}",
@@ -47,10 +48,10 @@ public final class TestStrings {
                 // complex
                 "{0} to {10}",
                 "{0} {0}",
-                "{0,number} {0,choice,0#foo|0<bar}",
-                "{0,date} {0,time}",
+                "{0,number} {0,choice,0#foo|0<bar}{0,number,currency}",
+                "{0,date}{0,time}",
                 "At {1,time} on {1,date}, there was {2} on planet {0,number,integer}.",
-                // TODO "{0}{0}{0}",
+                "{0}{0}{0}",
         };
     }
 

@@ -28,7 +28,7 @@ public final class Formatting {
             char ch = seq.charAt(i);
             if (ch == '\'') {
                 addRaw(list, seq, offset, i);
-                FormatSegment segment = parseEscaped(seq, i);
+                FormatLiteral segment = parseEscaped(seq, i);
                 list.add(segment);
                 rationalize(list);
                 i += segment.raw().length();
@@ -36,10 +36,11 @@ public final class Formatting {
             } else if (ch == '{') {
                 addRaw(list, seq, offset, i);
                 rationalize(list);
-                FormatSegment segment = parseVariable(seq, i);
+                FormatVariable segment = parseVariable(seq, i);
                 list.add(segment);
                 i += segment.raw().length();
                 offset = i;
+                i--;
             }
         }
         if (offset < seq.length()) {
