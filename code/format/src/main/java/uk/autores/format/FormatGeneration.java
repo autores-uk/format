@@ -5,6 +5,8 @@ package uk.autores.format;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * To be used in code generation.
@@ -49,6 +51,7 @@ public final class FormatGeneration {
     }
 
     public static List<String> expressions(List<FormatSegment> expression) {
+        int argCount = Formatting.argumentCount(expression);
         List<String> result = new ArrayList<>(expression.size() * 2);
         int est = Formatting.estimateLength(expression);
         result.add("java.lang.StringBuffer buf = new java.lang.StringBuffer(" + est + ");");
@@ -59,9 +62,10 @@ public final class FormatGeneration {
                 String append = "buf.append(" + escaped + ");";
                 result.add(append);
             } else {
-                add(result, (FormatVariable) segment);
+                add(result, argCount, (FormatVariable) segment);
             }
         }
+        result.add("return buf.toString();");
         return result;
     }
 
@@ -71,7 +75,7 @@ public final class FormatGeneration {
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);
             if (ch < ESCS.length) {
-                buf.append(ESCS[i]);
+                buf.append(ESCS[ch]);
             } else {
                 buf.append(ch);
             }
@@ -80,7 +84,7 @@ public final class FormatGeneration {
         return buf.toString();
     }
 
-    private static void add(List<String> expressions, FormatVariable v) {
+    private static void add(List<String> expressions, int argCount, FormatVariable v) {
         switch (v.type()) {
             case NUMBER:
                 number(expressions, v);
@@ -92,7 +96,7 @@ public final class FormatGeneration {
                 time(expressions, v);
                 break;
             case CHOICE:
-                choice(expressions, v);
+                choice(expressions, argCount, v);
                 break;
             default:
                 none(expressions, v);
@@ -125,9 +129,8 @@ public final class FormatGeneration {
             default:
                 inst = "java.text.NumberFormat.getInstance(l)";
         }
-        String format = inst + ".format(arg" + v.index() + ")";
-        String append = "buf.append(" + format + ")";
-        expressions.add(append);
+        String format = inst + ".format(arg" + v.index() + ", buf, new java.text.FieldPosition(0));";
+        expressions.add(format);
     }
 
     private static void date(List<String> expressions, FormatVariable v) {
@@ -151,11 +154,13 @@ public final class FormatGeneration {
             default:
                 inst = "java.text.DateFormat.getDateInstance(java.text.DateFormat.DEFAULT, l)";
         }
-        expressions.add("java.time.ZoneId zoneId = arg" + v.index() + ".getZone();");
-        expressions.add("java.util.TimeZone zone = java.util.TimeZone.getTimeZone(zoneId);");
-        expressions.add("java.text.DateFormat format = " + inst + ";");
-        expressions.add("format.setTimeZone(zone);");
-        expressions.add("buf.append(format.format(arg" + v.index() + "));");
+        String date = "  java.util.Date date = java.util.Date.from(arg" + v.index() + ".toInstant());";
+        expressions.add(date);
+        expressions.add("  java.time.ZoneId zoneId = arg" + v.index() + ".getZone();");
+        expressions.add("  java.util.TimeZone zone = java.util.TimeZone.getTimeZone(zoneId);");
+        expressions.add("  java.text.DateFormat format = " + inst + ";");
+        expressions.add("  format.setTimeZone(zone);");
+        expressions.add("  format.format(date, buf, new java.text.FieldPosition(0));");
         expressions.add("}");
     }
 
@@ -180,24 +185,28 @@ public final class FormatGeneration {
             default:
                 inst = "java.text.DateFormat.getTimeInstance(java.text.DateFormat.DEFAULT, l)";
         }
-        expressions.add("java.time.ZoneId zoneId = arg" + v.index() + ".getZone();");
-        expressions.add("java.util.TimeZone zone = java.util.TimeZone.getTimeZone(zoneId);");
-        expressions.add("java.text.DateFormat format = " + inst + ";");
-        expressions.add("format.setTimeZone(zone);");
-        expressions.add("buf.append(format.format(arg" + v.index() + "));");
+        String date = "  java.util.Date time = java.util.Date.from(arg" + v.index() + ".toInstant());";
+        expressions.add(date);
+        expressions.add("  java.time.ZoneId zoneId = arg" + v.index() + ".getZone();");
+        expressions.add("  java.util.TimeZone zone = java.util.TimeZone.getTimeZone(zoneId);");
+        expressions.add("  java.text.DateFormat format = " + inst + ";");
+        expressions.add("  format.setTimeZone(zone);");
+        expressions.add("  format.format(time, buf, new java.text.FieldPosition(0));");
         expressions.add("}");
     }
 
-    private static void choice(List<String> expressions, FormatVariable v) {
+    private static void choice(List<String> expressions, int argCount, FormatVariable v) {
         expressions.add("{");
 
         String pattern = escape(v.subformat());
-        expressions.add("java.text.ChoiceFormat format = new java.text.ChoiceFormat(" + pattern + ");");
-        expressions.add("java.lang.String result = format.format(arg" + v.index() + ");");
-        expressions.add("if (result.indexOf('{') >= 0) {");
-        expressions.add("// TODO");
-        expressions.add("}");
-        expressions.add("buf.append(result);");
+        expressions.add("  java.text.ChoiceFormat format = new java.text.ChoiceFormat(" + pattern + ");");
+        expressions.add("  java.lang.String result = format.format(arg" + v.index() + ");");
+        expressions.add("  if (result.indexOf('{') >= 0) {");
+        String argArray = IntStream.range(0, argCount).mapToObj(i -> "arg" + i).collect(Collectors.joining(", "));
+        expressions.add("    java.lang.Object[] args = {" + argArray + "};");
+        expressions.add("    result = new java.text.MessageFormat(result, l).format(args);");
+        expressions.add("  }");
+        expressions.add("  buf.append(result);");
 
         expressions.add("}");
     }

@@ -472,4 +472,16 @@ public final class Formatting {
         }
         return x * 2;
     }
+
+    public static boolean needsLocale(List<FormatSegment> expression) {
+        for (FormatSegment segment : expression) {
+            if (segment instanceof FormatVariable) {
+                FormatVariable fv = (FormatVariable) segment;
+                if (fv.type() != FormatType.NONE) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

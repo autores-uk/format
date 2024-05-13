@@ -253,4 +253,24 @@ public class FormattingTest {
             assertInstanceOf(FormatVariable.class, fs);
         }
     }
+
+    @Test
+    void needsLocale() {
+        Map<String, Boolean> tests = new LinkedHashMap<>();
+        tests.put("", false);
+        tests.put("foo 'bar'", false);
+        tests.put("{0}{0}{0}{0}", false);
+        tests.put("{0}{0}{0}{1,number}", true);
+        tests.put("{0}{0}{0}{1,date}{1,time}", true);
+
+        for (Map.Entry<String, Boolean> t : tests.entrySet()) {
+            boolean expected = t.getValue();
+            String test = t.getKey();
+            List<FormatSegment> expression = Formatting.parse(test);
+
+            boolean actual = Formatting.needsLocale(expression);
+
+            assertEquals(expected, actual);
+        }
+    }
 }
