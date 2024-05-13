@@ -6,3 +6,6 @@
 An alternative implementation of `java.text.MessageFormat`.
 This code is not intended for direct use.
 It has been written for use by `uk.autores:annotations`.
+
+Published artifacts can be found in the
+[Maven Central Repository](https://central.sonatype.com/artifact/uk.autores/format).
