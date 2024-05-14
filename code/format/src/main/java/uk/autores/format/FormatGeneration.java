@@ -10,7 +10,10 @@ import java.util.stream.IntStream;
 
 /**
  * To be used in code generation.
+ *
+ * @deprecated functionality folded into annotation library
  */
+@Deprecated
 public final class FormatGeneration {
     private static final String[] ESCS = generateEscapes();
 
