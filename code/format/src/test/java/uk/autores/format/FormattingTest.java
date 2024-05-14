@@ -116,8 +116,14 @@ public class FormattingTest {
             int expected = mf.getFormatsByArgumentIndex().length;
             int actual = Formatting.argumentCount(segments);
 
+            List<Class<?>> argTypes = Formatting.argumentTypesByIndex(segments);
+
             assertEquals(expected, actual, t);
-            assertEquals(expected, Formatting.argumentTypesByIndex(segments).size(), t);
+            assertEquals(expected, argTypes.size(), t);
+
+            for (int i = 0; i < argTypes.size(); i++) {
+                assertNotNull(argTypes.get(i), t);
+            }
         }
     }
 

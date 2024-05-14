@@ -292,11 +292,12 @@ public final class Formatting {
      */
     public static List<Class<?>> argumentTypesByIndex(List<FormatSegment> expression) {
         Class<?>[] results = new Class<?>[argumentCount(expression)];
+        Arrays.fill(results, Void.class);
         for (FormatSegment segment : expression) {
             if (segment instanceof FormatVariable) {
                 FormatVariable v = (FormatVariable) segment;
                 int index = v.index();
-                if (results[index] == null) {
+                if (results[index] == Void.class) {
                     results[index] = v.type().argType();
                 } else if (results[index] != v.type().argType()) {
                     String msg = results[index] + " does not match " + v.type().argType() + " at index " + index;
