@@ -42,6 +42,7 @@ public final class TestStrings {
                 "{0,time,full}",
                 // subformats
                 "{0,number,#,##0.##}",
+                "{0,number,''#,##0.##''}",
                 "{0,date,EE}",
                 "{0,time,hh}",
                 "There {0,choice,0#are no files|1#is one file|1<are {0,number,integer} files}.",
