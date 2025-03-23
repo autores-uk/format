@@ -162,23 +162,13 @@ public class FormattingTest {
         for (String t : TestStrings.valid()) {
             MessageFormat mf = new MessageFormat(t, l);
             List<FormatSegment> expression = Formatting.parse(t);
-            Object[] args = examples(expression);
+            Object[] args = Formatting.exampleArguments(expression);
 
             String expected = mf.format(args);
             String actual = Formatting.format(expression, l, args);
 
             assertEquals(expected, actual, t);
         }
-    }
-
-    private Object[] examples(List<FormatSegment> segments) {
-        Object[] args = Formatting.exampleArguments(segments);
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof ZonedDateTime) {
-                args[i] = new Date(0);
-            }
-        }
-        return args;
     }
 
     @Test

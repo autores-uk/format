@@ -7,6 +7,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -260,6 +261,11 @@ public final class Formatting {
             case CHOICE:
                 new ChoiceFormat(pattern);
                 break;
+            case DTF_DATE:
+            case DTF_TIME:
+            case DTF_DATETIME:
+                DateTimeFormatter.ofPattern(pattern, l);
+                break;
             default:
                 break;
         }
@@ -326,14 +332,17 @@ public final class Formatting {
                     case CHOICE:
                         args[index] = 10_000_000;
                         break;
+                    case NONE:
+                        args[index] = "foo bar baz";
+                        break;
                     case DATE:
                     case TIME:
+                        args[index] = new Date(0);
+                        break;
+                    default:
                         ZoneId utc = ZoneId.of("UTC");
                         LocalDateTime ldt = LocalDateTime.ofInstant(Instant.EPOCH, utc);
                         args[index] = ZonedDateTime.of(ldt, utc);
-                        break;
-                    default:
-                        args[index] = "foo bar baz";
                         break;
                 }
             }

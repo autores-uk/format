@@ -53,6 +53,8 @@ public final class TestStrings {
                 "{0,date}{0,time}",
                 "At {1,time} on {1,date}, there was {2} on planet {0,number,integer}.",
                 "{0}{0}{0}",
+                // JDK 23 dates
+                "{0,dtf_date}"
         };
     }
 
