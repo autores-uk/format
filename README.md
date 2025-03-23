@@ -9,3 +9,8 @@ It has been written for use by `uk.autores:annotations`.
 
 Published artifacts can be found in the
 [Maven Central Repository](https://central.sonatype.com/artifact/uk.autores/format).
+
+## Building
+
+Source and target are JDK8.
+Requires JDK11 to build using Maven.
