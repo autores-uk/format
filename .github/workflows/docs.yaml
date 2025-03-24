@@ -41,7 +41,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Move API docs
-        run: mv ./code/format/target/apidocs ./docs
+        run: mv ./code/format/target/reports/apidocs ./docs
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3 # or specific "vX.X.X" version tag for this action
