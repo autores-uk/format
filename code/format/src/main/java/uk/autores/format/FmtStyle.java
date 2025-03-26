@@ -10,7 +10,7 @@ package uk.autores.format;
 public enum FmtStyle {
     /** Indicates that no style has been specified. */
     NONE("(none)"),
-    /** Indicates a subformat has been provided. */
+    /** Indicates a custom style expression has been provided. */
     SUBFORMAT("(subformat)"),
     /** Number "integer" style. */
     INTEGER("integer"),
