@@ -124,14 +124,17 @@ final class Temporals {
 
     private static Object[] handleLegacy(FormatVariable v, Object... args) {
         Object[] result = args;
-        Object value = args[v.index()];
-        if (value instanceof Date) {
-            Date d = (Date) value;
-            ZoneId zid = ZoneId.systemDefault();
-            ZonedDateTime ldt = ZonedDateTime.ofInstant(d.toInstant(), zid);
+        FmtType type = v.type();
+        if (type == FmtType.DATE || type == FmtType.TIME) {
+            Object value = args[v.index()];
+            if (value instanceof Date) {
+                Date d = (Date) value;
+                ZoneId zid = ZoneId.systemDefault();
+                ZonedDateTime ldt = ZonedDateTime.ofInstant(d.toInstant(), zid);
 
-            result = args.clone();
-            result[v.index()] = ldt;
+                result = args.clone();
+                result[v.index()] = ldt;
+            }
         }
         return result;
     }
