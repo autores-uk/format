@@ -52,7 +52,7 @@ public final class FormatVariable extends FormatSegment {
     }
 
     /**
-     * Populated when {@link FmtStyle#SUBFORMAT} is detected.
+     * Populated when {@link FmtStyle#SUBFORMAT} is returned by {@link #style()}.
      *
      * @return sub-format pattern or empty string
      */
