@@ -33,15 +33,17 @@ public final class FormatVariable extends FormatSegment {
     }
 
     /**
-     * {@link FmtType#NONE} if not specified in the expression.
+     * The format type like "number", "dtf_datetime", etc.
+     * {@link FmtType#NONE} if no type specified in expression.
      *
-     * @return number, date, time, choice or (none)
+     * @return format type
      */
     public FmtType type() {
         return type;
     }
 
     /**
+     * Format style like "integer", "currency", etc.
      * {@link FmtStyle#NONE} if not specified in the expression.
      * {@link FmtStyle#SUBFORMAT} if not a match for {@link FmtType#styles()}.
      *
@@ -52,6 +54,7 @@ public final class FormatVariable extends FormatSegment {
     }
 
     /**
+     * A custom style expression.
      * Populated when {@link FmtStyle#SUBFORMAT} is returned by {@link #style()}.
      *
      * @return sub-format pattern or empty string
