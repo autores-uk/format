@@ -18,9 +18,9 @@ public enum FmtType {
     /** {@see java.text.NumberFormat} */
     NUMBER(FabricateNumber::format, "number", Number.class, FmtStyle.NONE, FmtStyle.INTEGER, FmtStyle.CURRENCY, FmtStyle.PERCENT, FmtStyle.SUBFORMAT),
     /** {@see java.text.DateFormat} */
-    DATE(FabricateDateTime::date, "date", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
+    DATE(FabricateDateTime::date, "date", ZonedDateTime.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
     /** {@see java.text.DateFormat} */
-    TIME(FabricateDateTime::time, "time", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
+    TIME(FabricateDateTime::time, "time", ZonedDateTime.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
     /** {@see java.text.ChoiceFormat} */
     CHOICE(FabricateChoice::choose, "choice", Number.class, FmtStyle.SUBFORMAT),
     /** {@see java.time.format.DateTimeFormatter} */
