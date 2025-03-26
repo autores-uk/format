@@ -7,7 +7,7 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class FabricateTemporalTest {
+class TemporalsTest {
 
     @Test
     void date() {

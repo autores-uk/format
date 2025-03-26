@@ -9,8 +9,8 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.function.Function;
 
-final class FabricateTemporal {
-    private FabricateTemporal() {}
+final class Temporals {
+    private Temporals() {}
 
     static void date(Locale l, FormatVariable v, StringBuffer buf, Object... args) {
         Object[] a = handleLegacy(v, args);

@@ -4,10 +4,10 @@ import java.text.ChoiceFormat;
 import java.util.List;
 import java.util.Locale;
 
-final class FabricateChoice {
-    private FabricateChoice() {}
+final class Choices {
+    private Choices() {}
 
-    static void choose(Locale l, FormatVariable variable, StringBuffer buf, Object... args) {
+    static void format(Locale l, FormatVariable variable, StringBuffer buf, Object... args) {
         Object value = args[variable.index()];
         ChoiceFormat format = new ChoiceFormat(variable.subformat());
         String choice = format.format(value);

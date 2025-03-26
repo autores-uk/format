@@ -6,8 +6,8 @@ import java.text.FieldPosition;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-final class FabricateNumber {
-    private FabricateNumber() {}
+final class Numbers {
+    private Numbers() {}
 
     static void format(Locale l, FormatVariable variable, StringBuffer buf, Object... args) {
         Object value = args[variable.index()];
