@@ -60,12 +60,12 @@ public enum FmtType {
     /** {@see java.time.format.DateTimeFormatter} */
     RFC_1123_DATE_TIME(Temporals::RFC_1123_DATE_TIME, "RFC_1123_DATE_TIME", TemporalAccessor.class, FmtStyle.NONE);
 
-    private final Fabricator fn;
+    private final Formatter fn;
     private final String type;
     private final Class<?> argType;
     private final Set<FmtStyle> styles;
 
-    FmtType(Fabricator fn, String type, Class<?> argType, FmtStyle... styles) {
+    FmtType(Formatter fn, String type, Class<?> argType, FmtStyle... styles) {
         this.fn = fn;
         this.type = type;
         this.argType = argType;
@@ -103,7 +103,7 @@ public enum FmtType {
         return EnumSet.copyOf(styles);
     }
 
-    Fabricator formatter() {
+    Formatter formatter() {
         return fn;
     }
 }
