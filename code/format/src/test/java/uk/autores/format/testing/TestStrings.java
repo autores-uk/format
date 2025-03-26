@@ -2,12 +2,19 @@
 // SPDX-License-Identifier: Apache-2.0
 package uk.autores.format.testing;
 
+import uk.autores.format.FmtStyle;
+import uk.autores.format.FmtType;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public final class TestStrings {
 
     private TestStrings() {}
 
     public static String[] valid() {
-        return new String[]{
+        String[] exprs = new String[]{
                 // simple
                 "",
                 "'",
@@ -21,25 +28,10 @@ public final class TestStrings {
                 "{0}",
                 "{1}",
                 "{10}",
-                "{0,number}",
-                "{0,date}",
-                "{0,time}",
                 // quoted out args
                 "'{0,number}",
                 "'{0,number}'",
                 "'{''}'",
-                // core styles
-                "{0,number,integer}",
-                "{0,number,currency}",
-                "{0,number,percent}",
-                "{0,date,short}",
-                "{0,date,medium}",
-                "{0,date,long}",
-                "{0,date,full}",
-                "{0,time,short}",
-                "{0,time,medium}",
-                "{0,time,long}",
-                "{0,time,full}",
                 // subformats
                 "{0,number,#,##0.##}",
                 "{0,number,''#,##0.##''}",
@@ -53,9 +45,33 @@ public final class TestStrings {
                 "{0,date}{0,time}",
                 "At {1,time} on {1,date}, there was {2} on planet {0,number,integer}.",
                 "{0}{0}{0}",
-                // JDK 23 dates
-                "{0,dtf_date}"
+                // JDK23 expressions
+                "{0,dtf_date,yy}",
+                "{0,dtf_time,hh}",
+                "{0,dtf_datetime,yy}",
         };
+
+        List<String> expressions = new ArrayList<>(Arrays.asList(exprs));
+        for (FmtType type : FmtType.values()) {
+            if (type == FmtType.NONE || type == FmtType.CHOICE) {
+                continue;
+            }
+            expressions.addAll(construct(type));
+        }
+        return expressions.toArray(new String[]{});
+    }
+
+    private static List<String> construct(FmtType type) {
+        List<String> expressions = new ArrayList<>();
+        for (FmtStyle style : type.styles()) {
+            String expr = "{0," + type.label();
+            if (style != FmtStyle.NONE && style != FmtStyle.SUBFORMAT) {
+                expr += "," + style.label();
+            }
+            expr += "}";
+            expressions.add(expr);
+        }
+        return expressions;
     }
 
     public static String[] invalid() {

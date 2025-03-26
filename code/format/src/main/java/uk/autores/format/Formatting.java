@@ -10,6 +10,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static java.util.Arrays.asList;
+
 /**
  * Static formatting methods.
  */
@@ -130,7 +132,7 @@ public final class Formatting {
                 throw new IllegalArgumentException("Unexpected char " + ch + " at " + i);
             }
         }
-        FormatType type = detectType(sequence, typeOffset);
+        FmtType type = detectType(sequence, typeOffset);
         int next = typeOffset + type.label().length();
         if (next >= sequence.length()) {
             throw new IllegalArgumentException("Expected character at index " + next);
@@ -142,10 +144,10 @@ public final class Formatting {
         if (delim != ',') {
             throw new IllegalArgumentException("Unexpected char " + delim + " at " + next);
         }
-        FormatStyle style = detectStyle(type, sequence, next + 1);
+        FmtStyle style = detectStyle(type, sequence, next + 1);
         String subformat;
         int end;
-        if (style == FormatStyle.SUBFORMAT) {
+        if (style == FmtStyle.SUBFORMAT) {
             subformat = parseSubformat(sequence, next + 1);
             end = next + 1 + subformat.length();
         } else {
@@ -165,11 +167,20 @@ public final class Formatting {
         }
     }
 
-    private static FormatType detectType(CharSequence sequence, int offset) {
-        for (FormatType type : FormatType.values()) {
-            if (type == FormatType.NONE) {
-                continue;
-            }
+    private static final FmtType[] NAMED_FMT_TYPES;
+    static {
+        List<FmtType> list = new ArrayList<>(asList(FmtType.values()));
+        list.remove(FmtType.NONE);
+        NAMED_FMT_TYPES = list.toArray(new FmtType[0]);
+        Arrays.sort(NAMED_FMT_TYPES, Formatting::longestFirst);
+    }
+
+    private static int longestFirst(FmtType a, FmtType b) {
+        return b.label().length() - a.label().length();
+    }
+
+    private static FmtType detectType(CharSequence sequence, int offset) {
+        for (FmtType type : NAMED_FMT_TYPES) {
             if (matches(sequence, offset, type.label())) {
                 return type;
             }
@@ -177,16 +188,16 @@ public final class Formatting {
         throw new IllegalArgumentException("Expected format type at " + offset);
     }
 
-    private static FormatStyle detectStyle(FormatType type, CharSequence sequence, int offset) {
-        for (FormatStyle s : type.styles()) {
-            if (s == FormatStyle.NONE || s == FormatStyle.SUBFORMAT) {
+    private static FmtStyle detectStyle(FmtType type, CharSequence sequence, int offset) {
+        for (FmtStyle s : type.styles()) {
+            if (s == FmtStyle.NONE || s == FmtStyle.SUBFORMAT) {
                 continue;
             }
             if (matches(sequence, offset, s.label())) {
                 return s;
             }
         }
-        return FormatStyle.SUBFORMAT;
+        return FmtStyle.SUBFORMAT;
     }
 
     private static String parseSubformat(CharSequence sequence, int offset) {
@@ -226,18 +237,18 @@ public final class Formatting {
     }
 
     private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index) {
-        return newVar(sequence, offset, end, index, FormatType.NONE, FormatStyle.NONE, "");
+        return newVar(sequence, offset, end, index, FmtType.NONE, FmtStyle.NONE, "");
     }
 
-    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FormatType type) {
-        return newVar(sequence, offset, end, index, type, FormatStyle.NONE, "");
+    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FmtType type) {
+        return newVar(sequence, offset, end, index, type, FmtStyle.NONE, "");
     }
 
-    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FormatType type, FormatStyle style) {
+    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FmtType type, FmtStyle style) {
         return newVar(sequence, offset, end, index, type, style, "");
     }
 
-    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FormatType type, FormatStyle style, String subformat) {
+    private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FmtType type, FmtStyle style, String subformat) {
         String raw = sequence.subSequence(offset, end).toString();
         FormatVariable v = new FormatVariable(raw, index, type, style, subformat);
         validate(v);
@@ -245,7 +256,7 @@ public final class Formatting {
     }
 
     private static void validate(FormatVariable v) {
-        if (v.style() != FormatStyle.SUBFORMAT) {
+        if (v.style() != FmtStyle.SUBFORMAT) {
             return;
         }
         String pattern = v.subformat();
@@ -291,7 +302,7 @@ public final class Formatting {
     }
 
     /**
-     * The mapped argument types as dictated by {@link FormatType#argType()}.
+     * The mapped argument types as dictated by {@link FmtType#argType()}.
      *
      * @param expression expression segments
      * @return immutable list of types
@@ -311,7 +322,7 @@ public final class Formatting {
                 }
             }
         }
-        return Lists.immutable(Arrays.asList(results));
+        return Lists.immutable(asList(results));
     }
 
     /**
@@ -319,7 +330,7 @@ public final class Formatting {
      *
      * @param segments expression segments
      * @return sample arguments
-     * @see FormatType#argType()
+     * @see FmtType#argType()
      */
     public static Object[] exampleArguments(List<FormatSegment> segments) {
         Object[] args = new Object[argumentCount(segments)];
@@ -333,7 +344,7 @@ public final class Formatting {
                         args[index] = 10_000_000;
                         break;
                     case NONE:
-                        args[index] = "foo bar baz";
+                        args[index] = "De finibus bonorum et malorum";
                         break;
                     case DATE:
                     case TIME:
@@ -362,105 +373,9 @@ public final class Formatting {
     public static String format(List<FormatSegment> expression, Locale l, Object...args) {
         StringBuffer buf = new StringBuffer();
         for (FormatSegment segment : expression) {
-            if (segment instanceof FormatLiteral) {
-                buf.append(((FormatLiteral) segment).processed());
-            }
-            if (segment instanceof FormatVariable) {
-                formatVar(l, buf, (FormatVariable) segment, args);
-            }
+            segment.formatTo(l, buf, args);
         }
         return buf.toString();
-    }
-
-    private static void formatVar(Locale l, StringBuffer buf, FormatVariable variable, Object...args) {
-        Object value = args[variable.index()];
-        switch (variable.type()) {
-            case NUMBER:
-                number(l, variable).format(value, buf, new FieldPosition(0));
-                break;
-            case DATE:
-                formatDate(buf, date(l, variable), value);
-                break;
-            case TIME:
-                formatDate(buf, time(l, variable), value);
-                break;
-            case CHOICE:
-                formatChoice(l, buf, variable, value, args);
-                break;
-            default:
-                buf.append(value);
-                break;
-        }
-    }
-
-    private static NumberFormat number(Locale l, FormatVariable variable) {
-        switch (variable.style()) {
-            case INTEGER:
-                return NumberFormat.getIntegerInstance(l);
-            case CURRENCY:
-                return NumberFormat.getCurrencyInstance(l);
-            case PERCENT:
-                return NumberFormat.getPercentInstance(l);
-            case SUBFORMAT:
-                return new DecimalFormat(variable.subformat(), DecimalFormatSymbols.getInstance(l));
-        }
-        return NumberFormat.getInstance(l);
-    }
-
-    private static DateFormat date(Locale l, FormatVariable variable) {
-        switch (variable.style()) {
-            case SHORT:
-                return DateFormat.getDateInstance(DateFormat.SHORT, l);
-            case MEDIUM:
-                return DateFormat.getDateInstance(DateFormat.MEDIUM, l);
-            case LONG:
-                return DateFormat.getDateInstance(DateFormat.LONG, l);
-            case FULL:
-                return DateFormat.getDateInstance(DateFormat.FULL, l);
-            case SUBFORMAT:
-                return new SimpleDateFormat(variable.subformat(), l);
-        }
-        return DateFormat.getDateInstance(DateFormat.DEFAULT, l);
-    }
-
-    private static DateFormat time(Locale l, FormatVariable variable) {
-        switch (variable.style()) {
-            case SHORT:
-                return DateFormat.getTimeInstance(DateFormat.SHORT, l);
-            case MEDIUM:
-                return DateFormat.getTimeInstance(DateFormat.MEDIUM, l);
-            case LONG:
-                return DateFormat.getTimeInstance(DateFormat.LONG, l);
-            case FULL:
-                return DateFormat.getTimeInstance(DateFormat.FULL, l);
-            case SUBFORMAT:
-                return new SimpleDateFormat(variable.subformat(), l);
-        }
-        return DateFormat.getTimeInstance(DateFormat.DEFAULT, l);
-    }
-
-    private static void formatDate(StringBuffer buf, DateFormat df, Object value) {
-        if (value instanceof ZonedDateTime) {
-            ZonedDateTime zdt = (ZonedDateTime) value;
-            ZoneId zoneId = zdt.getZone();
-            TimeZone zone = TimeZone.getTimeZone(zoneId);
-            df.setTimeZone(zone);
-            value = new Date(zdt.toEpochSecond());
-        }
-        df.format(value, buf, new FieldPosition(0));
-    }
-
-    private static void formatChoice(Locale l, StringBuffer buf, FormatVariable variable, Object value, Object...args) {
-        ChoiceFormat format = new ChoiceFormat(variable.subformat());
-        String choice = format.format(value);
-        String result;
-        if (choice.indexOf('{') >= 0) {
-            List<FormatSegment> recursive = parse(choice);
-            result = format(recursive, l, args);
-        } else {
-            result = choice;
-        }
-        buf.append(result);
     }
 
     /**
@@ -483,11 +398,19 @@ public final class Formatting {
         return x * 2;
     }
 
+    /**
+     * Tests an expression to determine if a {@link Locale} is required to format an expression.
+     * Returns true if any {@link FormatSegment} is a {@link FormatVariable} and
+     * its {@link FormatVariable#type()} is NOT {@link FmtType#NONE}.
+     *
+     * @param expression parsed expression
+     * @return true if a locale is required
+     */
     public static boolean needsLocale(List<FormatSegment> expression) {
         for (FormatSegment segment : expression) {
             if (segment instanceof FormatVariable) {
                 FormatVariable fv = (FormatVariable) segment;
-                if (fv.type() != FormatType.NONE) {
+                if (fv.type() != FmtType.NONE) {
                     return true;
                 }
             }

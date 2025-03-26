@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package uk.autores.format;
 
+import java.util.Locale;
+
 /**
  * Represents indexed variable expression like <code>{1,number,currency}</code>.
  */
@@ -9,11 +11,11 @@ public final class FormatVariable extends FormatSegment {
 
     private final String raw;
     private final int index;
-    private final FormatType type;
-    private final FormatStyle style;
+    private final FmtType type;
+    private final FmtStyle style;
     private final String subformat;
 
-    FormatVariable(String raw, int index, FormatType type, FormatStyle style, String subformat) {
+    FormatVariable(String raw, int index, FmtType type, FmtStyle style, String subformat) {
         this.raw = raw;
         this.index = index;
         this.type = type;
@@ -31,26 +33,26 @@ public final class FormatVariable extends FormatSegment {
     }
 
     /**
-     * {@link FormatType#NONE} if not specified in the expression.
+     * {@link FmtType#NONE} if not specified in the expression.
      *
      * @return number, date, time, choice or (none)
      */
-    public FormatType type() {
+    public FmtType type() {
         return type;
     }
 
     /**
-     * {@link FormatStyle#NONE} if not specified in the expression.
-     * {@link FormatStyle#SUBFORMAT} if not a match for {@link FormatType#styles()}.
+     * {@link FmtStyle#NONE} if not specified in the expression.
+     * {@link FmtStyle#SUBFORMAT} if not a match for {@link FmtType#styles()}.
      *
      * @return format type specific style
      */
-    public FormatStyle style() {
+    public FmtStyle style() {
         return style;
     }
 
     /**
-     * Populated when {@link FormatStyle#SUBFORMAT} is detected.
+     * Populated when {@link FmtStyle#SUBFORMAT} is detected.
      *
      * @return sub-format pattern or empty string
      */
@@ -59,7 +61,12 @@ public final class FormatVariable extends FormatSegment {
     }
 
     @Override
-    public String raw() {
+    String raw() {
         return raw;
+    }
+
+    @Override
+    void formatTo(Locale l, StringBuffer buf,  Object... args) {
+        type.formatter().format(l, this, buf, args);
     }
 }

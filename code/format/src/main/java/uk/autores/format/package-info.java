@@ -1,5 +1,5 @@
 /**
- * <h1>AutoRes Format</h1>
+ * <h2>AutoRes Format</h2>
  *
  * <p>
  *     An alternative to {@link java.text.MessageFormat}.

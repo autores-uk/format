@@ -191,7 +191,7 @@ public class FormattingTest {
             String expr = "At {1,time} on {1,date}, there was {2} on planet {0,number,integer}.";
             List<FormatSegment> expression = Formatting.parse(expr);
             String actual = Formatting.format(expression, english, 4, epoch, "an eclipse");
-            String expected = "At 12:00:00 AM on Jan 1, 1970, there was an eclipse on planet 4.";
+            String expected = "At 12:00:00\u202fAM on Jan 1, 1970, there was an eclipse on planet 4.";
             assertEquals(expected, actual);
         }
         {

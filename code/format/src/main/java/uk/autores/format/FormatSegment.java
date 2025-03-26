@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package uk.autores.format;
 
+import java.util.Locale;
+
 /**
  * Base type for {@link FormatVariable} and {@link FormatLiteral}.
  */
@@ -14,6 +16,15 @@ public abstract class FormatSegment {
      * @return original string
      */
     abstract String raw();
+
+    /**
+     * Formats the expression and appends it to buffer.
+     *
+     * @param l    the locale
+     * @param buf  the target buffer
+     * @param args array of arguments containing elements for any indices evaluated
+     */
+    abstract void formatTo(Locale l, StringBuffer buf, Object... args);
 
     @Override
     public final boolean equals(Object obj) {

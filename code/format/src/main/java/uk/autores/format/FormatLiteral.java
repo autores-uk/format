@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package uk.autores.format;
 
+import java.util.Locale;
+
 /**
  * Represents non-variable parts of format expressions.
  */
@@ -15,12 +17,17 @@ public final class FormatLiteral extends FormatSegment {
     }
 
     @Override
-    public String raw() {
+    String raw() {
         return raw;
     }
 
+    @Override
+    void formatTo(Locale l, StringBuffer buf, Object... args) {
+        buf.append(processed);
+    }
+
     /**
-     * Processes escape sequences
+     * Processes escape sequences.
      *
      * @return escape processed string
      */
