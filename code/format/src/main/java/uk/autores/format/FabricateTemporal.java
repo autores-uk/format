@@ -1,8 +1,11 @@
 package uk.autores.format;
 
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
+import java.util.Date;
 import java.util.Locale;
 import java.util.function.Function;
 
@@ -10,13 +13,15 @@ final class FabricateTemporal {
     private FabricateTemporal() {}
 
     static void date(Locale l, FormatVariable v, StringBuffer buf, Object... args) {
+        Object[] a = handleLegacy(v, args);
         DateTimeFormatter dtf = formatter(DateTimeFormatter::ofLocalizedDate, l, v);
-        format(dtf, v, buf, args);
+        format(dtf, v, buf, a);
     }
 
     static void time(Locale l, FormatVariable v, StringBuffer buf, Object... args) {
+        Object[] a = handleLegacy(v, args);
         DateTimeFormatter dtf = formatter(DateTimeFormatter::ofLocalizedTime, l, v);
-        format(dtf, v, buf, args);
+        format(dtf, v, buf, a);
     }
 
     static void datetime(Locale l, FormatVariable v, StringBuffer buf, Object... args) {
@@ -115,5 +120,19 @@ final class FabricateTemporal {
             default:
                 return FormatStyle.MEDIUM;
         }
+    }
+
+    private static Object[] handleLegacy(FormatVariable v, Object... args) {
+        Object[] result = args;
+        Object value = args[v.index()];
+        if (value instanceof Date) {
+            Date d = (Date) value;
+            ZoneId zid = ZoneId.systemDefault();
+            ZonedDateTime ldt = ZonedDateTime.ofInstant(d.toInstant(), zid);
+
+            result = args.clone();
+            result[v.index()] = ldt;
+        }
+        return result;
     }
 }

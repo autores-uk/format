@@ -2,7 +2,6 @@ package uk.autores.format;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -12,7 +11,7 @@ class FabricateTemporalTest {
 
     @Test
     void date() {
-        Object[] args = {new Date(0)};
+        Object[] args = {new Object()};
         Locale l = Locale.CANADA;
         List<FormatSegment> expr = Formatting.parse("{0,dtf_date}");
         assertThrows(RuntimeException.class, () -> {
