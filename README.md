@@ -13,4 +13,4 @@ Published artifacts can be found in the
 ## Building
 
 Source and target are JDK8.
-Requires JDK11 to build using Maven.
+Requires JDK23 to build using Maven.
