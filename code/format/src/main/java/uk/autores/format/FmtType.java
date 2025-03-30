@@ -13,7 +13,7 @@ import static java.util.Arrays.asList;
  * The format types supported by {@link java.text.MessageFormat}.
  */
 public enum FmtType {
-    /** Indicates that no style has been specified. */
+    /** Indicates that no type has been specified. */
     NONE(AnyObject::format, "(none)", String.class, FmtStyle.NONE),
     /** Maps to {@link java.text.NumberFormat} */
     NUMBER(Numbers::format, "number", Number.class, FmtStyle.NONE, FmtStyle.INTEGER, FmtStyle.CURRENCY, FmtStyle.PERCENT, FmtStyle.SUBFORMAT),
