@@ -13,4 +13,10 @@ Published artifacts can be found in the
 ## Building
 
 Source and target are JDK8.
-Requires JDK23 to build using Maven.
+Requires JDK23 to execute unit tests.
+
+Use Maven wrapper scripts to build:
+
+```shell
+code/format/mvnw -f code/format/pom.xml clean install
+```
