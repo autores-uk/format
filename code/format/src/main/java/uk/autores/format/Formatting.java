@@ -3,9 +3,6 @@
 package uk.autores.format;
 
 import java.text.*;
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -51,7 +48,7 @@ public final class Formatting {
             rationalize(list);
         }
         argumentTypesByIndex(list);
-        return Lists.immutable(list);
+        return Immutable.list(list);
     }
 
     private static void rationalize(List<FormatSegment> segments) {
@@ -322,7 +319,7 @@ public final class Formatting {
                 }
             }
         }
-        return Lists.immutable(asList(results));
+        return Immutable.list(asList(results));
     }
 
     /**
@@ -339,21 +336,22 @@ public final class Formatting {
                 FormatVariable v = (FormatVariable) segment;
                 int index = v.index();
                 switch (v.type()) {
+                    case NONE:
+                        args[index] = "De finibus bonorum et malorum";
+                        break;
                     case NUMBER:
                     case CHOICE:
                         args[index] = 10_000_000;
-                        break;
-                    case NONE:
-                        args[index] = "De finibus bonorum et malorum";
                         break;
                     case DATE:
                     case TIME:
                         args[index] = new Date(0);
                         break;
+                    case LIST:
+                        args[index] = new ArrayList<>(asList("foo", "bar", "baz"));
+                        break;
                     default:
-                        ZoneId utc = ZoneId.of("UTC");
-                        LocalDateTime ldt = LocalDateTime.ofInstant(Instant.EPOCH, utc);
-                        args[index] = ZonedDateTime.of(ldt, utc);
+                        args[index] = ZonedDateTime.now();
                         break;
                 }
             }
@@ -362,8 +360,13 @@ public final class Formatting {
     }
 
     /**
-     * Static format implementation.
-     * Approximates behaviour of {@link MessageFormat#format(String, Object...)}.
+     * <p>
+     *     Static format implementation.
+     *     Approximates behaviour of {@link MessageFormat#format(String, Object...)}.
+     * </p>
+     * <p>
+     *     <strong>Use of {@link FmtType#LIST} expressions requires JDK 22 or above.</strong>
+     * </p>
      *
      * @param expression expression segments
      * @param l locale

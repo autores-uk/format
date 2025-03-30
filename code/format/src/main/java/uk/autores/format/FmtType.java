@@ -4,6 +4,7 @@ package uk.autores.format;
 
 import java.time.temporal.TemporalAccessor;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
@@ -57,7 +58,9 @@ public enum FmtType {
     /** Maps to {@link java.time.format.DateTimeFormatter#ISO_INSTANT} */
     ISO_INSTANT(Temporals::ISO_INSTANT, "ISO_INSTANT", TemporalAccessor.class, FmtStyle.NONE),
     /** Maps to {@link java.time.format.DateTimeFormatter#RFC_1123_DATE_TIME} */
-    RFC_1123_DATE_TIME(Temporals::RFC_1123_DATE_TIME, "RFC_1123_DATE_TIME", TemporalAccessor.class, FmtStyle.NONE);
+    RFC_1123_DATE_TIME(Temporals::RFC_1123_DATE_TIME, "RFC_1123_DATE_TIME", TemporalAccessor.class, FmtStyle.NONE),
+    /** Maps to <code>java.text.ListFormat</code> */
+    LIST(Lists::format, "list", List.class, FmtStyle.NONE, FmtStyle.OR, FmtStyle.UNIT);
 
     private final Formatter fn;
     private final String label;

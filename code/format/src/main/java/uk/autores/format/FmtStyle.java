@@ -25,7 +25,11 @@ public enum FmtStyle {
     /** Date/time formatters' "long" style. */
     LONG("long"),
     /** Date/time formatters' "full" style. */
-    FULL("full");
+    FULL("full"),
+    /** List formatter "or" style. */
+    OR("or"),
+    /** List formatter "unit" style. */
+    UNIT("unit");
 
     private final String style;
 
