@@ -10,8 +10,7 @@
  * <p>
  *     Use
  *     {@link uk.autores.format.Formatting#parse(java.lang.CharSequence)}
- *     to parse expressions.
- *     Use
+ *     to parse expressions. Use
  *     {@link uk.autores.format.Formatting#format(java.util.List, java.util.Locale, java.lang.Object...)}
  *     to format strings.
  * </p>
@@ -22,5 +21,11 @@
  *     Locale l = Locale.getDefault();
  *     String result = Formatting.format(expression, l, "World");
  * </code></pre>
+ * <p>
+ *     All
+ *     <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/MessageFormat.html">JDK23
+ *     expressions</a> are supported under JDK8+ runtimes
+ *     except formatting "list" expressions which requires a JDK22+ runtime.
+ * </p>
  */
 package uk.autores.format;
