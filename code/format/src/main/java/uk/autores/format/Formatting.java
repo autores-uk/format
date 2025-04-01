@@ -364,6 +364,10 @@ public final class Formatting {
         return args;
     }
 
+    private static final List<?> EXAMPLE_LIST = Immutable.list(asList("Pugh", "Pugh", "Barney McGrew", "Cuthbert", "Dibble", "Grub"));
+    private static final ZonedDateTime EXAMPLE_ZDT = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
+    private static final Integer EXAMPLE_NUMBER = 10_000_000;
+
     private static void setExample(FormatVariable v, Object[] args) {
         int index = v.index();
         switch (v.type()) {
@@ -372,17 +376,17 @@ public final class Formatting {
                 break;
             case NUMBER:
             case CHOICE:
-                args[index] = 10_000_000;
+                args[index] = EXAMPLE_NUMBER;
                 break;
             case DATE:
             case TIME:
                 args[index] = new Date(0);
                 break;
             case LIST:
-                args[index] = asList("Pugh", "Pugh", "Barney McGrew", "Cuthbert", "Dibble", "Grub");
+                args[index] = EXAMPLE_LIST;
                 break;
             default:
-                args[index] = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
+                args[index] = EXAMPLE_ZDT;
                 break;
         }
     }
