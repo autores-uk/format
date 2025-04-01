@@ -26,7 +26,7 @@ public final class Formatting {
      *     <li>{@link FormatLiteral} <code>"At "</code></li>
      *     <li>{@link FormatVariable} <code>"{1,time}"</code> argument index 1 {@link FmtType#TIME}</li>
      *     <li>{@link FormatLiteral} <code>" on "</code></li>
-     *     <li>{@link FormatVariable} <code>"{1,date}"</code>  argument index 1 {@link FmtType#TIME}</li>
+     *     <li>{@link FormatVariable} <code>"{1,date}"</code>  argument index 1 {@link FmtType#DATE}</li>
      *     <li>{@link FormatLiteral} <code>", there was "</code></li>
      *     <li>{@link FormatVariable} <code>"{2}"</code>  argument index 2 {@link FmtType#NONE}</li>
      *     <li>{@link FormatLiteral} <code>" on planet "</code></li>
