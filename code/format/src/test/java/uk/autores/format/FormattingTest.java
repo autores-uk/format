@@ -176,7 +176,7 @@ public class FormattingTest {
         for (String t : TestStrings.valid()) {
             List<FormatSegment> segments = Formatting.parse(t);
 
-            int estimate = Formatting.estimateLength(segments);
+            int estimate = Formatting.estimateLength(Locale.US, segments);
             assertTrue(estimate >= 0, t);
         }
     }

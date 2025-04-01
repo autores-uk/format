@@ -3,6 +3,8 @@
 package uk.autores.format;
 
 import java.text.*;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -17,6 +19,20 @@ public final class Formatting {
 
     /**
      * Parses {@link MessageFormat} expression into component parts.
+     * The expression
+     * <code>"At {1,time} on {1,date}, there was {2} on planet {0,number,integer}."</code>
+     * will be parsed to:
+     * <ul>
+     *     <li>{@link FormatLiteral} <code>"At "</code></li>
+     *     <li>{@link FormatVariable} <code>"{1,time}"</code> argument index 1 {@link FmtType#TIME}</li>
+     *     <li>{@link FormatLiteral} <code>" on "</code></li>
+     *     <li>{@link FormatVariable} <code>"{1,date}"</code>  argument index 1 {@link FmtType#TIME}</li>
+     *     <li>{@link FormatLiteral} <code>", there was "</code></li>
+     *     <li>{@link FormatVariable} <code>"{2}"</code>  argument index 2 {@link FmtType#NONE}</li>
+     *     <li>{@link FormatLiteral} <code>" on planet "</code></li>
+     *     <li>{@link FormatVariable} <code>"{0,number,integer}"</code>  argument index 0 {@link FmtType#NUMBER} {@link FmtStyle#INTEGER}</li>
+     *     <li>{@link FormatLiteral} <code>"."</code></li>
+     * </ul>
      *
      * @param seq format string
      * @return immutable list of component parts
@@ -280,7 +296,14 @@ public final class Formatting {
     }
 
     /**
-     * The number of arguments referenced by {@link FormatVariable}s in the expression.
+     * <p>
+     *     The number of arguments referenced by {@link FormatVariable}s in the expression.
+     * </p>
+     * <p>
+     *      The expression <code>"{3}"</code> returns a count of <code>4</code> because an
+     *      argument array of four elements is required to resolve <code>arg[3]</code>
+     *      despite arguments zero through three not being present.
+     * </p>
      *
      * @param expression expression components
      * @return argument count or zero if there are no variables
@@ -300,6 +323,7 @@ public final class Formatting {
 
     /**
      * The mapped argument types as dictated by {@link FmtType#argType()}.
+     * Any missing argument indices are mapped to {@link Void}.
      *
      * @param expression expression segments
      * @return immutable list of types
@@ -334,29 +358,33 @@ public final class Formatting {
         for (FormatSegment segment : segments) {
             if (segment instanceof FormatVariable) {
                 FormatVariable v = (FormatVariable) segment;
-                int index = v.index();
-                switch (v.type()) {
-                    case NONE:
-                        args[index] = "De finibus bonorum et malorum";
-                        break;
-                    case NUMBER:
-                    case CHOICE:
-                        args[index] = 10_000_000;
-                        break;
-                    case DATE:
-                    case TIME:
-                        args[index] = new Date(0);
-                        break;
-                    case LIST:
-                        args[index] = new ArrayList<>(asList("foo", "bar", "baz"));
-                        break;
-                    default:
-                        args[index] = ZonedDateTime.now();
-                        break;
-                }
+                setExample(v, args);
             }
         }
         return args;
+    }
+
+    private static void setExample(FormatVariable v, Object[] args) {
+        int index = v.index();
+        switch (v.type()) {
+            case NONE:
+                args[index] = "De finibus bonorum et malorum";
+                break;
+            case NUMBER:
+            case CHOICE:
+                args[index] = 10_000_000;
+                break;
+            case DATE:
+            case TIME:
+                args[index] = new Date(0);
+                break;
+            case LIST:
+                args[index] = asList("Pugh", "Pugh", "Barney McGrew", "Cuthbert", "Dibble", "Grub");
+                break;
+            default:
+                args[index] = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
+                break;
+        }
     }
 
     /**
@@ -384,12 +412,13 @@ public final class Formatting {
     /**
      * Estimates the length of a formatted expression.
      *
+     * @param l the locale
      * @param expression expression segments
      * @return an estimation of required buffer size
      */
-    public static int estimateLength(List<FormatSegment> expression) {
+    public static int estimateLength(Locale l, List<FormatSegment> expression) {
         Object[] args = exampleArguments(expression);
-        String result = format(expression, Locale.ENGLISH, args);
+        String result = format(expression, l, args);
         return normalize(result.length());
     }
 

@@ -1,11 +1,11 @@
 package uk.autores.format;
 
-import junit.framework.TestCase;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class ReflectionTest extends TestCase {
+public class ReflectionTest {
 
     public static final String OK = "OK";
 
@@ -17,7 +17,8 @@ public class ReflectionTest extends TestCase {
         throw e;
     }
 
-    public void testType() {
+    @Test
+    void type() {
         {
             Class<?> me = Reflection.type(ReflectionTest.class.getName(), "");
             assertSame(ReflectionTest.class, me);
@@ -34,13 +35,15 @@ public class ReflectionTest extends TestCase {
         }
     }
 
-    public void testField() {
+    @Test
+    void field() {
         Class<?> me = Reflection.type(ReflectionTest.class.getName(), "");
         Object actual = Reflection.field(me, "OK");
         assertEquals(OK, actual);
     }
 
-    public void testInvoke() {
+    @Test
+    void invoke() {
         Class<?> me = Reflection.type(ReflectionTest.class.getName(), "");
         {
             Method m = Reflection.meth(me, "ok");
