@@ -59,7 +59,7 @@ public enum FmtType {
     ISO_INSTANT(Temporals::ISO_INSTANT, "ISO_INSTANT", TemporalAccessor.class, FmtStyle.NONE),
     /** Maps to {@link java.time.format.DateTimeFormatter#RFC_1123_DATE_TIME} */
     RFC_1123_DATE_TIME(Temporals::RFC_1123_DATE_TIME, "RFC_1123_DATE_TIME", TemporalAccessor.class, FmtStyle.NONE),
-    /** Maps to <code>java.text.ListFormat</code> */
+    /** Maps to <a href="https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/text/ListFormat.html">java.text.ListFormat</a> */
     LIST(Lists::format, "list", List.class, FmtStyle.NONE, FmtStyle.OR, FmtStyle.UNIT);
 
     private final Formatter fn;
