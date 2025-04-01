@@ -418,8 +418,14 @@ public final class Formatting {
      */
     public static int estimateLength(Locale l, List<FormatSegment> expression) {
         Object[] args = exampleArguments(expression);
-        String result = format(expression, l, args);
-        return normalize(result.length());
+        StringBuffer buf = new StringBuffer();
+        int len = 0;
+        for (FormatSegment segment : expression) {
+            segment.formatTo(l, buf, args);
+            len += buf.length();
+            buf.delete(0, buf.length());
+        }
+        return normalize(len);
     }
 
     private static int normalize(int n) {
