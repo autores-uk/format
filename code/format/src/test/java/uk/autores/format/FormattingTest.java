@@ -154,7 +154,6 @@ public class FormattingTest {
         TestEquality.test(candidates.toArray());
     }
 
-
     @Test
     void format() {
         Locale l = Locale.ENGLISH;
