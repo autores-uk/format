@@ -6,7 +6,7 @@
 
     <groupId>uk.autores</groupId>
     <artifactId>format</artifactId>
-    <version>8.0.3-beta-SNAPSHOT</version>
+    <version>8.0.3-beta</version>
 
     <packaging>jar</packaging>
 
