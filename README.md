@@ -1,5 +1,6 @@
 [![Build](https://github.com/autores-uk/format/actions/workflows/ci.yaml/badge.svg)](https://github.com/autores-uk/format/actions/workflows/ci.yaml)
 [![Document](https://github.com/autores-uk/format/actions/workflows/docs.yaml/badge.svg)](https://github.com/autores-uk/format/actions/workflows/docs.yaml)
+[![javadoc](https://javadoc.io/badge2/uk.autores/format/javadoc.svg)](https://javadoc.io/doc/uk.autores/format)
 
 # AutoRes Format
 
