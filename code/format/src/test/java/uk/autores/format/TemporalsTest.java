@@ -2,7 +2,6 @@ package uk.autores.format;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -13,9 +12,9 @@ class TemporalsTest {
     void date() {
         Object[] args = {new Object()};
         Locale l = Locale.CANADA;
-        List<FormatSegment> expr = Formatting.parse("{0,dtf_date}");
+        FormatExpression expr = FormatExpression.parse("{0,dtf_date}");
         assertThrows(RuntimeException.class, () -> {
-            Formatting.format(expr, l, args);
+            expr.formatTo(l, new StringBuffer(), args);
         });
     }
 }

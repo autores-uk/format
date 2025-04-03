@@ -9,9 +9,9 @@
  * </p>
  * <p>
  *     Use
- *     {@link uk.autores.format.Formatting#parse(java.lang.CharSequence)}
+ *     {@link uk.autores.format.FormatExpression#parse(java.lang.CharSequence)}
  *     to parse expressions. Use
- *     {@link uk.autores.format.Formatting#format(java.util.List, java.util.Locale, java.lang.Object...)}
+ *     {@link uk.autores.format.FormatExpression#format(java.util.Locale, java.lang.Object...)}
  *     to format strings.
  * </p>
  * <pre><code>

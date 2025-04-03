@@ -2,43 +2,193 @@
 // SPDX-License-Identifier: Apache-2.0
 package uk.autores.format;
 
-import java.text.*;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.text.ChoiceFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static java.util.Arrays.asList;
 
 /**
- * Static formatting methods.
+ * <p>
+ *     Type that approximates the behaviour of {@link java.text.MessageFormat}.
+ * </p>
+ * Features:
+ * <ul>
+ *     <li>Immutable/thread safe</li>
+ *     <li>Supports JDK23 expressions at lower JDK versions</li>
+ *     <li>Exposes more parsed expression metadata</li>
+ * </ul>
  */
-public final class Formatting {
-    private Formatting() {}
+public final class FormatExpression extends Formatter implements Iterable<Formatter> {
+    private final String raw;
+    private final Formatter[] expr;
+    private final int vars;
+
+    FormatExpression(String raw, Formatter[] expr, int vars) {
+        this.raw = raw;
+        this.expr = expr;
+        this.vars = vars;
+    }
+
+    @Override
+    public void formatTo(Locale l, StringBuffer buf, Object... args) {
+        for (Formatter f : expr) {
+            f.formatTo(l, buf, args);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return raw;
+    }
+
+    @Override
+    public Iterator<Formatter> iterator() {
+        return asList(expr).iterator();
+    }
 
     /**
-     * Parses {@link MessageFormat} expression into component parts.
-     * The expression
-     * <code>"At {1,time} on {1,date}, there was {2} on planet {0,number,integer}."</code>
-     * will be parsed to:
-     * <ul>
-     *     <li>{@link FormatLiteral} <code>"At "</code></li>
-     *     <li>{@link FormatVariable} <code>"{1,time}"</code> argument index 1 {@link FmtType#TIME}</li>
-     *     <li>{@link FormatLiteral} <code>" on "</code></li>
-     *     <li>{@link FormatVariable} <code>"{1,date}"</code>  argument index 1 {@link FmtType#DATE}</li>
-     *     <li>{@link FormatLiteral} <code>", there was "</code></li>
-     *     <li>{@link FormatVariable} <code>"{2}"</code>  argument index 2 {@link FmtType#NONE}</li>
-     *     <li>{@link FormatLiteral} <code>" on planet "</code></li>
-     *     <li>{@link FormatVariable} <code>"{0,number,integer}"</code>  argument index 0 {@link FmtType#NUMBER} {@link FmtStyle#INTEGER}</li>
-     *     <li>{@link FormatLiteral} <code>"."</code></li>
-     * </ul>
+     * <p>
+     *     The number of arguments referenced by {@link FormatVariable}s in the expression.
+     * </p>
+     * <p>
+     *      The expression <code>"{3}"</code> returns a count of <code>4</code> because an
+     *      argument array of four elements is required to resolve <code>arg[3]</code>
+     *      despite arguments zero through three not being present.
+     * </p>
      *
-     * @param seq format string
-     * @return immutable list of component parts
+     * @return argument count or zero if there are no variables
      */
-    public static List<FormatSegment> parse(CharSequence seq) {
-        List<FormatSegment> list = new ArrayList<>();
+    public int argCount() {
+        return vars;
+    }
+
+    /**
+     * <p>
+     *     The types for any {@link FormatVariable}s.
+     * </p>
+     * <p>
+     *     The {@link FmtType#argType()}s map to the {@link FormatVariable#index()}.
+     *     {@link Void} is returned for any missing arguments.
+     * </p>
+     *
+     * @return types by index
+     */
+    public List<Class<?>> argTypes() {
+        Class<?>[] results = new Class<?>[vars];
+        Arrays.fill(results, Void.class);
+        for (Formatter segment : expr) {
+            if (segment instanceof FormatVariable) {
+                FormatVariable v = (FormatVariable) segment;
+                results[v.index()] = v.type().argType();
+            }
+        }
+        return Immutable.list(asList(results));
+    }
+
+    /**
+     * Useful for testing and string size estimation.
+     *
+     * @return sample arguments
+     * @see FmtType#argType()
+     */
+    public Object[] argExamples() {
+        Object[] args = new Object[vars];
+        for (Formatter f: expr) {
+            if (f instanceof FormatVariable) {
+                setExample((FormatVariable) f, args);
+            }
+        }
+        return args;
+    }
+
+    private static void setExample(FormatVariable v, Object[] args) {
+        int index = v.index();
+        switch (v.type()) {
+            case NONE:
+                args[index] = "De finibus bonorum et malorum";
+                break;
+            case NUMBER:
+            case CHOICE:
+                args[index] = Examples.EXAMPLE_NUMBER;
+                break;
+            case DATE:
+            case TIME:
+                args[index] = new Date(0);
+                break;
+            case LIST:
+                args[index] = Examples.EXAMPLE_LIST;
+                break;
+            default:
+                args[index] = Examples.EXAMPLE_ZDT;
+                break;
+        }
+    }
+
+    /**
+     * Estimates the length of the evaluated expression.
+     *
+     * @param l locale
+     * @return suggested string buffer size
+     */
+    public int estimateLen(Locale l) {
+        Object[] args = argExamples();
+        StringBuffer buf = new StringBuffer();
+        int len = 0;
+        for (Formatter segment : expr) {
+            segment.formatTo(l, buf, args);
+            len += buf.length();
+            buf.delete(0, buf.length());
+        }
+        return normalize(len);
+    }
+
+    private int normalize(int n) {
+        int x = 8;
+        while (x < n) {
+            x *= 2;
+        }
+        return x * 2;
+    }
+
+    /**
+     * Tests an expression to determine if a {@link Locale} is required to format an expression.
+     * True if any {@link Formatter} is a {@link FormatVariable} AND
+     * any {@link FormatVariable#type()} is NOT {@link FmtType#NONE}.
+     *
+     * @return true if a locale is required
+     */
+    public boolean needsLocale() {
+        for (Formatter segment : expr) {
+            if (segment instanceof FormatVariable) {
+                FormatVariable fv = (FormatVariable) segment;
+                if (fv.type() != FmtType.NONE) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    int size() {
+        return expr.length;
+    }
+
+    Formatter get(int i) {
+        return expr[i];
+    }
+
+    /**
+     * Parses a {@link java.text.MessageFormat} expression.
+     *
+     * @param seq source text
+     * @return parsed expression
+     */
+    public static FormatExpression parse(CharSequence seq) {
+        List<Formatter> list = new ArrayList<>();
         int offset = 0;
         for (int i = 0; i < seq.length(); i++) {
             char ch = seq.charAt(i);
@@ -47,14 +197,14 @@ public final class Formatting {
                 FormatLiteral segment = parseEscaped(seq, i);
                 list.add(segment);
                 rationalize(list);
-                i += segment.raw().length();
+                i += segment.toString().length();
                 offset = i;
             } else if (ch == '{') {
                 addRaw(list, seq, offset, i);
                 rationalize(list);
                 FormatVariable segment = parseVariable(seq, i);
                 list.add(segment);
-                i += segment.raw().length();
+                i += segment.toString().length();
                 offset = i;
                 i--;
             }
@@ -63,31 +213,33 @@ public final class Formatting {
             addRaw(list, seq, offset, seq.length());
             rationalize(list);
         }
-        argumentTypesByIndex(list);
-        return Immutable.list(list);
+        Formatter[] expr = list.toArray(new Formatter[0]);
+        int vars = argCount(expr);
+        validateTypes(expr, vars);
+        return new FormatExpression(seq.toString(), expr, vars);
     }
 
-    private static void rationalize(List<FormatSegment> segments) {
-        if (segments.size() > 1) {
-            int i0 = segments.size() - 1;
-            FormatSegment s0 = segments.get(i0);
-            int i1 = segments.size() - 2;
-            FormatSegment s1 = segments.get(i1);
+    private static void rationalize(List<Formatter> expr) {
+        if (expr.size() > 1) {
+            int i0 = expr.size() - 1;
+            Formatter s0 = expr.get(i0);
+            int i1 = expr.size() - 2;
+            Formatter s1 = expr.get(i1);
             if (s0 instanceof FormatLiteral && s1 instanceof FormatLiteral) {
-                segments.remove(i0);
-                segments.remove(i1);
+                expr.remove(i0);
+                expr.remove(i1);
                 FormatLiteral l0 = (FormatLiteral) s0;
                 FormatLiteral l1 = (FormatLiteral) s1;
                 FormatLiteral combined = new FormatLiteral(
-                        l1.raw() + l0.raw(),
+                        l1.toString() + l0,
                         l1.processed() + l0.processed()
                 );
-                segments.add(combined);
+                expr.add(combined);
             }
         }
     }
 
-    private static void addRaw(List<FormatSegment> list, CharSequence seq, int start, int end) {
+    private static void addRaw(List<Formatter> list, CharSequence seq, int start, int end) {
         if (end - start > 0) {
             String raw = seq.subSequence(start, end).toString();
             list.add(new FormatLiteral(raw, raw));
@@ -168,9 +320,6 @@ public final class Formatting {
             checkExhausted(sequence, end);
             return newVar(sequence, offset, end, index, type, style);
         }
-//        if (end == sequence.length() || sequence.charAt(end) != '}') {
-//            throw new IllegalArgumentException("Expected } at index " + end);
-//        }
         return newVar(sequence, offset, end + 1, index, type, style, subformat);
     }
 
@@ -185,7 +334,7 @@ public final class Formatting {
         List<FmtType> list = new ArrayList<>(asList(FmtType.values()));
         list.remove(FmtType.NONE);
         NAMED_FMT_TYPES = list.toArray(new FmtType[0]);
-        Arrays.sort(NAMED_FMT_TYPES, Formatting::longestFirst);
+        Arrays.sort(NAMED_FMT_TYPES, FormatExpression::longestFirst);
     }
 
     private static int longestFirst(FmtType a, FmtType b) {
@@ -295,22 +444,26 @@ public final class Formatting {
         }
     }
 
-    /**
-     * <p>
-     *     The number of arguments referenced by {@link FormatVariable}s in the expression.
-     * </p>
-     * <p>
-     *      The expression <code>"{3}"</code> returns a count of <code>4</code> because an
-     *      argument array of four elements is required to resolve <code>arg[3]</code>
-     *      despite arguments zero through three not being present.
-     * </p>
-     *
-     * @param expression expression components
-     * @return argument count or zero if there are no variables
-     */
-    public static int argumentCount(List<? extends FormatSegment> expression) {
+    private static void validateTypes(Formatter[] expr, int vars) {
+        Object[] args = new Object[vars];
+        Arrays.fill(args, Void.class);
+        for (Formatter segment : expr) {
+            if (segment instanceof FormatVariable) {
+                FormatVariable v = (FormatVariable) segment;
+                int index = v.index();
+                if (args[index] == Void.class) {
+                    args[index] = v.type().argType();
+                } else if (args[index] != v.type().argType()) {
+                    String msg = args[index] + " does not match " + v.type().argType() + " at index " + index;
+                    throw new IllegalArgumentException(msg);
+                }
+            }
+        }
+    }
+
+    static int argCount(Formatter[] s) {
         int max = 0;
-        for (FormatSegment segment : expression) {
+        for (Formatter segment : s) {
             if (!(segment instanceof FormatVariable)) {
                 continue;
             }
@@ -319,144 +472,5 @@ public final class Formatting {
             max = Math.max(max, n);
         }
         return max;
-    }
-
-    /**
-     * The mapped argument types as dictated by {@link FmtType#argType()}.
-     * Any missing argument indices are mapped to {@link Void}.
-     *
-     * @param expression expression segments
-     * @return immutable list of types
-     */
-    public static List<Class<?>> argumentTypesByIndex(List<FormatSegment> expression) {
-        Class<?>[] results = new Class<?>[argumentCount(expression)];
-        Arrays.fill(results, Void.class);
-        for (FormatSegment segment : expression) {
-            if (segment instanceof FormatVariable) {
-                FormatVariable v = (FormatVariable) segment;
-                int index = v.index();
-                if (results[index] == Void.class) {
-                    results[index] = v.type().argType();
-                } else if (results[index] != v.type().argType()) {
-                    String msg = results[index] + " does not match " + v.type().argType() + " at index " + index;
-                    throw new IllegalArgumentException(msg);
-                }
-            }
-        }
-        return Immutable.list(asList(results));
-    }
-
-    /**
-     * Useful for testing and resultant string size estimation.
-     *
-     * @param segments expression segments
-     * @return sample arguments
-     * @see FmtType#argType()
-     */
-    public static Object[] exampleArguments(List<FormatSegment> segments) {
-        Object[] args = new Object[argumentCount(segments)];
-        for (FormatSegment segment : segments) {
-            if (segment instanceof FormatVariable) {
-                FormatVariable v = (FormatVariable) segment;
-                setExample(v, args);
-            }
-        }
-        return args;
-    }
-
-    private static final List<?> EXAMPLE_LIST = Immutable.list(asList("Pugh", "Pugh", "Barney McGrew", "Cuthbert", "Dibble", "Grub"));
-    private static final ZonedDateTime EXAMPLE_ZDT = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
-    private static final Integer EXAMPLE_NUMBER = 10_000_000;
-
-    private static void setExample(FormatVariable v, Object[] args) {
-        int index = v.index();
-        switch (v.type()) {
-            case NONE:
-                args[index] = "De finibus bonorum et malorum";
-                break;
-            case NUMBER:
-            case CHOICE:
-                args[index] = EXAMPLE_NUMBER;
-                break;
-            case DATE:
-            case TIME:
-                args[index] = new Date(0);
-                break;
-            case LIST:
-                args[index] = EXAMPLE_LIST;
-                break;
-            default:
-                args[index] = EXAMPLE_ZDT;
-                break;
-        }
-    }
-
-    /**
-     * <p>
-     *     Static format implementation.
-     *     Approximates behaviour of {@link MessageFormat#format(String, Object...)}.
-     * </p>
-     * <p>
-     *     <strong>Use of {@link FmtType#LIST} expressions requires JDK 22 or above.</strong>
-     * </p>
-     *
-     * @param expression expression segments
-     * @param l locale
-     * @param args arguments
-     * @return formatted string
-     */
-    public static String format(List<FormatSegment> expression, Locale l, Object...args) {
-        StringBuffer buf = new StringBuffer();
-        for (FormatSegment segment : expression) {
-            segment.formatTo(l, buf, args);
-        }
-        return buf.toString();
-    }
-
-    /**
-     * Estimates the length of a formatted expression.
-     *
-     * @param l the locale
-     * @param expression expression segments
-     * @return an estimation of required buffer size
-     */
-    public static int estimateLength(Locale l, List<FormatSegment> expression) {
-        Object[] args = exampleArguments(expression);
-        StringBuffer buf = new StringBuffer();
-        int len = 0;
-        for (FormatSegment segment : expression) {
-            segment.formatTo(l, buf, args);
-            len += buf.length();
-            buf.delete(0, buf.length());
-        }
-        return normalize(len);
-    }
-
-    private static int normalize(int n) {
-        int x = 8;
-        while (x < n) {
-            x *= 2;
-        }
-        return x * 2;
-    }
-
-    /**
-     * Tests an expression to determine if a {@link Locale} is required to format an expression.
-     * Returns true if any {@link FormatSegment} is a {@link FormatVariable} and
-     * its {@link FormatVariable#type()} is NOT {@link FmtType#NONE}.
-     *
-     * @param expression parsed expression
-     * @return true if a locale is required
-     */
-    public static boolean needsLocale(List<FormatSegment> expression) {
-        for (FormatSegment segment : expression) {
-            if (segment instanceof FormatVariable) {
-                FormatVariable fv = (FormatVariable) segment;
-                if (fv.type() != FmtType.NONE) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 }

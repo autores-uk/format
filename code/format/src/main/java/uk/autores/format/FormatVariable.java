@@ -7,7 +7,7 @@ import java.util.Locale;
 /**
  * Represents indexed variable expression like <code>{1,number,currency}</code>.
  */
-public final class FormatVariable extends FormatSegment {
+public final class FormatVariable extends Formatter {
 
     private final String raw;
     private final int index;
@@ -64,12 +64,12 @@ public final class FormatVariable extends FormatSegment {
     }
 
     @Override
-    String raw() {
-        return raw;
+    public void formatTo(Locale l, StringBuffer buf,  Object... args) {
+        type.formatter().format(l, this, buf, args);
     }
 
     @Override
-    void formatTo(Locale l, StringBuffer buf,  Object... args) {
-        type.formatter().format(l, this, buf, args);
+    public String toString() {
+        return raw;
     }
 }

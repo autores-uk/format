@@ -94,7 +94,7 @@ final class Temporals {
     private static void format(DateTimeFormatter f, FormatVariable variable, StringBuffer buf, Object... args) {
         Object arg = args[variable.index()];
         if (!(arg instanceof TemporalAccessor)) {
-            String msg = variable.raw()
+            String msg = variable
                     + " requires "
                     + TemporalAccessor.class.getName();
             throw new IllegalArgumentException(msg);

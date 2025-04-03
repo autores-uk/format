@@ -4,7 +4,54 @@ package uk.autores.format;
 
 import java.util.Locale;
 
-@FunctionalInterface
-interface Formatter {
-    void format(Locale l, FormatVariable variable, StringBuffer buf, Object... args);
+/**
+ * Base format expression type.
+ * Implementations are equal if their {@link #toString()} values are equal.
+ */
+public abstract class Formatter {
+    Formatter() {}
+
+    /**
+     * Formats the expression and appends it to buffer.
+     *
+     * @param l    the locale
+     * @param buf  the target buffer
+     * @param args array of arguments containing elements for any indices evaluated
+     */
+    public abstract void formatTo(Locale l, StringBuffer buf, Object... args);
+
+    /**
+     * Formats the expression.
+     *
+     * @param l    the locale
+     * @param args array of arguments containing elements for any indices evaluated
+     * @return the evaluated expression
+     */
+    public String format(Locale l, Object... args) {
+        StringBuffer buf = new StringBuffer();
+        formatTo(l, buf, args);
+        return buf.toString();
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (obj instanceof Formatter) {
+            Formatter other = (Formatter) obj;
+            return toString().equals(other.toString());
+        }
+        return false;
+    }
+
+    @Override
+    public final int hashCode() {
+        return toString().hashCode();
+    }
+
+    /**
+     * The unprocessed expression.
+     *
+     * @return raw string
+     */
+    @Override
+    public abstract String toString();
 }

@@ -62,12 +62,12 @@ public enum FmtType {
     /** Maps to <a href="https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/text/ListFormat.html">java.text.ListFormat</a> */
     LIST(Lists::format, "list", List.class, FmtStyle.NONE, FmtStyle.OR, FmtStyle.UNIT);
 
-    private final Formatter fn;
+    private final Fmt fn;
     private final String label;
     private final Class<?> argType;
     private final Set<FmtStyle> styles;
 
-    FmtType(Formatter fn, String label, Class<?> argType, FmtStyle... styles) {
+    FmtType(Fmt fn, String label, Class<?> argType, FmtStyle... styles) {
         this.fn = fn;
         this.label = label;
         this.argType = argType;
@@ -105,7 +105,7 @@ public enum FmtType {
         return EnumSet.copyOf(styles);
     }
 
-    Formatter formatter() {
+    Fmt formatter() {
         return fn;
     }
 }

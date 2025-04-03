@@ -7,7 +7,7 @@ import java.util.Locale;
 /**
  * Represents non-variable parts of format expressions.
  */
-public final class FormatLiteral extends FormatSegment {
+public final class FormatLiteral extends Formatter {
     private final String raw;
     private final String processed;
 
@@ -17,13 +17,13 @@ public final class FormatLiteral extends FormatSegment {
     }
 
     @Override
-    String raw() {
-        return raw;
+    public void formatTo(Locale l, StringBuffer buf, Object... args) {
+        buf.append(processed);
     }
 
     @Override
-    void formatTo(Locale l, StringBuffer buf, Object... args) {
-        buf.append(processed);
+    public String toString() {
+        return raw;
     }
 
     /**
