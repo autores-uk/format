@@ -15,11 +15,13 @@
  *     to format strings.
  * </p>
  * <pre><code>
- *     // parse to immutable expression
- *     List&lt;FormatSegment&gt; expression = Formatting.parse("Hello, {0}!");
- *     // format
- *     Locale l = Locale.getDefault();
- *     String result = Formatting.format(expression, l, "World");
+ *   // parse to immutable expression
+ *   var expression = FormatExpression.parse("Hello, {0}!");
+ *   // format
+ *   var l = Locale.getDefault();
+ *   String result = expression.format(l, "World");
+ *   // output
+ *   System.out.println(result);
  * </code></pre>
  * <p>
  *     All
