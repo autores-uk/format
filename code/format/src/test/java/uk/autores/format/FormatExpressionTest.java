@@ -116,10 +116,10 @@ class FormatExpressionTest {
             int expected = mf.getFormatsByArgumentIndex().length;
             int actual = expr.argCount();
 
-            List<Class<?>> argTypes = expr.argTypes();
+            Class<?>[] argTypes = expr.argTypes();
 
             assertEquals(expected, actual, t);
-            assertEquals(expected, argTypes.size(), t);
+            assertEquals(expected, argTypes.length, t);
 
             for (Class<?> argType : argTypes) {
                 assertNotNull(argType, t);

@@ -8,6 +8,8 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 
@@ -23,12 +25,10 @@ import static java.util.Arrays.asList;
  * </ul>
  */
 public final class FormatExpression extends Formatter implements Iterable<Formatter> {
-    private final String raw;
     private final Formatter[] expr;
     private final int vars;
 
-    FormatExpression(String raw, Formatter[] expr, int vars) {
-        this.raw = raw;
+    FormatExpression(Formatter[] expr, int vars) {
         this.expr = expr;
         this.vars = vars;
     }
@@ -42,9 +42,16 @@ public final class FormatExpression extends Formatter implements Iterable<Format
 
     @Override
     public String toString() {
-        return raw;
+        return Stream.of(expr)
+                .map(Object::toString)
+                .collect(Collectors.joining());
     }
 
+    /**
+     * Constituent {@link FormatLiteral}s and {@link FormatVariable}s.
+     *
+     * @return component parts, in order
+     */
     @Override
     public Iterator<Formatter> iterator() {
         return asList(expr).iterator();
@@ -77,7 +84,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      *
      * @return types by index
      */
-    public List<Class<?>> argTypes() {
+    public Class<?>[] argTypes() {
         Class<?>[] results = new Class<?>[vars];
         Arrays.fill(results, Void.class);
         for (Formatter segment : expr) {
@@ -86,7 +93,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
                 results[v.index()] = v.type().argType();
             }
         }
-        return Immutable.list(asList(results));
+        return results;
     }
 
     /**
@@ -216,7 +223,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         Formatter[] expr = list.toArray(new Formatter[0]);
         int vars = argCount(expr);
         validateTypes(expr, vars);
-        return new FormatExpression(seq.toString(), expr, vars);
+        return new FormatExpression(expr, vars);
     }
 
     private static void rationalize(List<Formatter> expr) {
