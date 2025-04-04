@@ -8,8 +8,6 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 
@@ -42,9 +40,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
 
     @Override
     public String toString() {
-        return Stream.of(expr)
-                .map(Object::toString)
-                .collect(Collectors.joining());
+        return Chars.concat(expr);
     }
 
     /**
