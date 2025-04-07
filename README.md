@@ -11,8 +11,7 @@ A better
 // parse to immutable expression
 var expression = FormatExpression.parse("Hello, {0}!");
 // format
-var l = Locale.getDefault();
-String result = expression.format(l, "World");
+String result = expression.format(Locale.getDefault(), "World");
 // print "Hello, World!"
 System.out.println(result);
 ```
