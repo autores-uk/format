@@ -4,12 +4,18 @@
 
 # AutoRes Format
 
-An alternative implementation of `java.text.MessageFormat`.
-This code is not intended for direct use.
-It has been written for use by `uk.autores:annotations`.
+A better
+[java.text.MessageFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/MessageFormat.html).
 
-Published artifacts can be found in the
-[Maven Central Repository](https://central.sonatype.com/artifact/uk.autores/format).
+## Features
+
+ - Immutable/thread safe parsed expressions
+ - Supports JDK23 expressions at lower JDK versions
+ - Exposes more parsed expression metadata
+
+Note: parsing
+[ListFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/ListFormat.html)
+expressions is supported in JDK8+ but formatting such expressions requires a JDK22+ runtime.
 
 ## Building
 
@@ -21,3 +27,6 @@ Use Maven wrapper scripts to build:
 ```shell
 code/format/mvnw -f code/format/pom.xml clean install
 ```
+
+Published artifacts can be found in the
+[Maven Central Repository](https://central.sonatype.com/artifact/uk.autores/format).

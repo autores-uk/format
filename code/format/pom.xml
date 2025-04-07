@@ -11,7 +11,7 @@
     <packaging>jar</packaging>
 
     <name>AutoRes.uk Format</name>
-    <description>Alternative implementation of java.text.MessageFormat</description>
+    <description>A better java.text.MessageFormat</description>
     <url>https://autores.uk</url>
 
     <properties>
