@@ -7,9 +7,19 @@
 A better
 [java.text.MessageFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/MessageFormat.html).
 
+```java
+// parse to immutable expression
+var expression = FormatExpression.parse("Hello, {0}!");
+// format
+var l = Locale.getDefault();
+String result = expression.format(l, "World");
+// print "Hello, World!"
+System.out.println(result);
+```
+
 ## Features
 
- - Immutable/thread safe parsed expressions
+ - Immutable, thread-safe parsed expressions
  - Supports JDK23 expressions at lower JDK versions
  - Exposes more parsed expression metadata
 
