@@ -8,7 +8,7 @@ A better
 [java.text.MessageFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/MessageFormat.html).
 
 ```java
-// parse to immutable expression
+// parse to immutable formatter
 var expression = FormatExpression.parse("Hello, {0}!");
 // format
 String result = expression.format(Locale.getDefault(), "World");

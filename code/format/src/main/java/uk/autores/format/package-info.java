@@ -15,7 +15,7 @@
  *     to format strings.
  * </p>
  * <pre><code>
- *   // parse to immutable expression
+ *   // parse to immutable formatter
  *   var expression = FormatExpression.parse("Hello, {0}!");
  *   // format
  *   var l = Locale.getDefault();
