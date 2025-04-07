@@ -3,7 +3,13 @@
 package uk.autores.format;
 
 /**
- * Format styles supported by the various {@link FmtType}s.
+ * <p>
+ *     Format styles supported by the various {@link FmtType}s.
+ *     Not all expression types support all styles.
+ * </p>
+ * <p>
+ *     <code>"{0,number,currency}"</code> is an example expression that results in {@link #CURRENCY} when parsed.
+ * </p>
  *
  * @see FmtType#styles()
  */

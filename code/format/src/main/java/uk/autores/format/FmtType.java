@@ -10,7 +10,15 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 
 /**
- * The format types supported by {@link java.text.MessageFormat}.
+ *
+ * <p>
+ *     The format types supported by {@link java.text.MessageFormat}.
+ * </p>
+ * <p>
+ *     <code>"{0,number}"</code> is an example expression that results in {@link #NUMBER} when parsed.
+ * </p>
+ *
+ * @see FormatVariable#type()
  */
 public enum FmtType {
     /** Indicates that no type has been specified. */
