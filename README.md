@@ -24,7 +24,7 @@ System.out.println(result);
 
 Note: parsing
 [ListFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/ListFormat.html)
-expressions is supported in JDK8+ but formatting such expressions requires a JDK22+ runtime.
+expressions like `{0,list}` is supported in JDK8+ but formatting such expressions requires a JDK22+ runtime.
 
 ## Building
 
