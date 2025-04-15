@@ -30,6 +30,7 @@ Notes:
  - [Format](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/Format.html)
    types attempt to solve two problems - format and parse;
    this library only formats
+ - `FormatExpression` uses the same format types for numbers, lists and date/times as `MessageFormat` for compatibility reasons
 
 ## Building
 
