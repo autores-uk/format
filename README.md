@@ -22,9 +22,9 @@ System.out.println(result);
  - Supports JDK23 expressions at lower JDK versions
  - Exposes more parsed expression metadata
 
-Notes:
+## Implementation Notes
 
- - parsing
+ - Parsing
    [ListFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/ListFormat.html)
    expressions like `{0,list}` is supported in JDK8+ but formatting such expressions requires a JDK22+ runtime
  - [Format](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/Format.html)
