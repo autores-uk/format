@@ -45,3 +45,8 @@ code/format/mvnw -f code/format/pom.xml clean install
 
 Published artifacts can be found in the
 [Maven Central Repository](https://central.sonatype.com/artifact/uk.autores/format).
+
+## Branches & Tags
+
+Development is done on the main branch.
+Releases are tagged as `release/$version`.
