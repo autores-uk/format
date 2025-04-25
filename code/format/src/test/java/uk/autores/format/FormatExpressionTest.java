@@ -128,6 +128,21 @@ class FormatExpressionTest {
     }
 
     @Test
+    void objects() {
+        class X {
+            @Override
+            public String toString() {
+                return "X";
+            }
+        }
+
+        String expr = "{0}";
+        String expected = MessageFormat.format(expr, new X());
+        String actual = FormatExpression.parse(expr).format(Locale.getDefault(), new X());
+        assertEquals(expected, actual);
+    }
+
+    @Test
     void raw() {
         for (String expected : TestStrings.valid()) {
             FormatExpression expr = FormatExpression.parse(expected);
