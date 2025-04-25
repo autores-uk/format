@@ -29,5 +29,8 @@
  *     expressions</a> are supported under JDK8+ runtimes
  *     except formatting "list" expressions which requires a JDK22+ runtime.
  * </p>
+ * <p>
+ *     See <a href="https://github.com/autores-uk/format">GitHub</a> for more information.
+ * </p>
  */
 package uk.autores.format;
