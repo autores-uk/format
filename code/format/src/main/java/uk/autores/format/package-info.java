@@ -25,12 +25,12 @@
  * </code></pre>
  * <p>
  *     All
- *     <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/MessageFormat.html">JDK23
+ *     <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/MessageFormat.html" target="_blank">JDK23
  *     expressions</a> are supported under JDK8+ runtimes
  *     except formatting "list" expressions which requires a JDK22+ runtime.
  * </p>
  * <p>
- *     See <a href="https://github.com/autores-uk/format">GitHub</a> for more information.
+ *     See <a href="https://github.com/autores-uk/format" target="_blank">GitHub</a> for more information.
  * </p>
  */
 package uk.autores.format;
