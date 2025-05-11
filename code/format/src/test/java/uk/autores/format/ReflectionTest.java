@@ -1,8 +1,10 @@
 package uk.autores.format;
 
+import org.junit.jupiter.api.Test;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ReflectionTest {
