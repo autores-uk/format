@@ -8,7 +8,7 @@ A better
 [java.text.MessageFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/MessageFormat.html).
 
 ```java
-// parse to immutable formatter
+// parse to immutable, thread-safe formatter
 var expression = FormatExpression.parse("Hello, {0}!");
 // format
 String result = expression.format(Locale.getDefault(), "World");
@@ -24,16 +24,18 @@ System.out.println(result);
 
 ## Implementation Notes
 
- - `FormatExpression` uses the same format types for numbers, lists and date/times as `MessageFormat` for compatibility reasons
- - Parsing
-   [ListFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/ListFormat.html)
-   expressions like `{0,list}` is supported in JDK8+ but formatting such expressions requires a JDK22+ runtime
- - Parsing
-   [compact](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/NumberFormat.html#getCompactNumberInstance(java.util.Locale,java.text.NumberFormat.Style))
-   number expressions like `{0,number,compact_short}` is supported in JDK8+ but formatting such expressions requires a JDK12+ runtime
+ - `FormatExpression` uses the same
+   [Format](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/Format.html)
+   types under the covers for numbers, lists and date/times as `MessageFormat` to ensure maximum compatibility with the runtime JDK
  - [Format](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/Format.html)
    types attempt to solve two problems - format and parse;
    this library only formats
+ - Parsing
+  [compact](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/NumberFormat.html#getCompactNumberInstance(java.util.Locale,java.text.NumberFormat.Style))
+  number expressions like `{0,number,compact_short}` is supported in JDK8+ but formatting such expressions requires a JDK12+ runtime
+ - Parsing
+   [ListFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/ListFormat.html)
+   expressions like `{0,list}` is supported in JDK8+ but formatting such expressions requires a JDK22+ runtime
 
 ## Building
 
