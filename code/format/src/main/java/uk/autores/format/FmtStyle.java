@@ -35,7 +35,11 @@ public enum FmtStyle {
     /** List formatter "or" style. */
     OR("or"),
     /** List formatter "unit" style. */
-    UNIT("unit");
+    UNIT("unit"),
+    /** Number "compact_short" style. */
+    COMPACT_SHORT("compact_short"),
+    /** Number "compact_long" style. */
+    COMPACT_LONG("compact_long");
 
     private final String style;
 

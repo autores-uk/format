@@ -28,6 +28,9 @@ System.out.println(result);
  - Parsing
    [ListFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/ListFormat.html)
    expressions like `{0,list}` is supported in JDK8+ but formatting such expressions requires a JDK22+ runtime
+ - Parsing
+   [compact](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/NumberFormat.html#getCompactNumberInstance(java.util.Locale,java.text.NumberFormat.Style))
+   number expressions like `{0,number,compact_short}` is supported in JDK8+ but formatting such expressions requires a JDK12+ runtime
  - [Format](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/Format.html)
    types attempt to solve two problems - format and parse;
    this library only formats

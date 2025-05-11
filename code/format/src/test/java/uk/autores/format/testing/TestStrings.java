@@ -35,6 +35,8 @@ public final class TestStrings {
                 // subformats
                 "{0,number,#,##0.##}",
                 "{0,number,''#,##0.##''}",
+                "{0,number,compact_long}",
+                "{0,number,compact_short}",
                 "{0,date,EE}",
                 "{0,time,hh}",
                 "There {0,choice,0#are no files|1#is one file|1<are {0,number,integer} files}.",

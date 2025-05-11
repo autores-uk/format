@@ -24,7 +24,7 @@ public enum FmtType {
     /** Indicates that no type has been specified. */
     NONE(AnyObject::format, "(none)", Object.class, FmtStyle.NONE),
     /** Maps to {@link java.text.NumberFormat} */
-    NUMBER(Numbers::format, "number", Number.class, FmtStyle.NONE, FmtStyle.INTEGER, FmtStyle.CURRENCY, FmtStyle.PERCENT, FmtStyle.SUBFORMAT),
+    NUMBER(Numbers::format, "number", Number.class, FmtStyle.NONE, FmtStyle.INTEGER, FmtStyle.CURRENCY, FmtStyle.PERCENT, FmtStyle.SUBFORMAT, FmtStyle.COMPACT_SHORT, FmtStyle.COMPACT_LONG),
     /** Maps to {@link java.time.format.DateTimeFormatter} */
     DATE(Temporals::date, "date", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
     /** Maps to {@link java.time.format.DateTimeFormatter} */
