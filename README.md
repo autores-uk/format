@@ -31,16 +31,13 @@ System.out.println(result);
    types attempt to solve two problems - format and parse;
    this library only formats
  - Parsing
-  [compact](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/text/NumberFormat.html#getCompactNumberInstance(java.util.Locale,java.text.NumberFormat.Style))
-  number expressions like `{0,number,compact_short}` is supported in JDK8+ but formatting such expressions requires a JDK12+ runtime
- - Parsing
    [ListFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/ListFormat.html)
-   expressions like `{0,list}` is supported in JDK8+ but formatting such expressions requires a JDK22+ runtime
+   expressions like `{0,list}` is supported in JDK17+ but formatting such expressions requires a JDK22+ runtime
 
 ## Building
 
-Source and target are JDK8.
-Requires JDK23 to execute unit tests.
+Source and target are JDK17.
+Requires JDK23 to execute unit tests and static analysis.
 
 Use Maven wrapper scripts to build:
 
