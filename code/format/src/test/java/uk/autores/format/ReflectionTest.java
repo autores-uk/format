@@ -31,7 +31,7 @@ public class ReflectionTest {
                 Reflection.type("DoesNotExist", msg);
                 fail();
             } catch (Exception e) {
-                assertTrue(e instanceof RuntimeException);
+                assertInstanceOf(RuntimeException.class, e);
                 assertEquals(msg, e.getMessage());
             }
         }
@@ -58,7 +58,7 @@ public class ReflectionTest {
                 Reflection.invoke(null, m, new TestException());
                 fail();
             } catch (Exception e) {
-                assertTrue(e.getCause() instanceof InvocationTargetException);
+                assertInstanceOf(InvocationTargetException.class, e.getCause());
             }
         }
         {
@@ -67,7 +67,7 @@ public class ReflectionTest {
                 Reflection.invoke(null, m, new TestRuntimeException());
                 fail();
             } catch (Exception e) {
-                assertTrue(e instanceof TestRuntimeException);
+                assertInstanceOf(TestRuntimeException.class, e);
             }
         }
     }
