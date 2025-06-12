@@ -93,8 +93,9 @@ public enum FmtType {
 
     /**
      * <ul>
-     *     <li>{@link #NONE}: {@link String}</li>
+     *     <li>{@link #NONE}: {@link Object}</li>
      *     <li>{@link #NUMBER}, {@link #CHOICE}: {@link Number}</li>
+     *     <li>{@link #LIST}: {@link java.util.List}</li>
      *     <li>Others: {@link TemporalAccessor}</li>
      * </ul>
      *
