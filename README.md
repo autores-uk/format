@@ -39,7 +39,7 @@ System.out.println(result);
 
 ## Building
 
-Source and target are JDK8.
+Source and target are JDK17.
 Requires JDK23 to execute unit tests.
 
 Use Maven wrapper scripts to build:
