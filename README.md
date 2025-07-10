@@ -32,7 +32,7 @@ System.out.println(result);
    this library only formats
  - Parsing
    [ListFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/ListFormat.html)
-   expressions like `{0,list}` is supported in JDK8+ but formatting such expressions requires a JDK22+ runtime
+   expressions like `{0,list}` is supported in JDK17+ but formatting such expressions requires a JDK22+ runtime
 
 ## Building
 

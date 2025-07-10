@@ -26,10 +26,9 @@
  * <p>
  *     All
  *     <a href="https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/MessageFormat.html" target="_blank">JDK23
- *     expressions</a> are supported under JDK8+ runtimes with the following exceptions.
+ *     expressions</a> are supported under JDK17+ runtimes with the following exceptions.
  * </p>
  * <ul>
- *     <li>Formatting compact "number" expressions like <code>{0,number,compact_short}</code> requires a JDK12+ runtime</li>
  *     <li>Formatting "list" expressions like <code>{0,list}</code> requires a JDK22+ runtime</li>
  * </ul>
  * <p>
