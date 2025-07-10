@@ -34,6 +34,13 @@ System.out.println(result);
    [ListFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/ListFormat.html)
    expressions like `{0,list}` is supported in JDK17+ but formatting such expressions requires a JDK22+ runtime
 
+## Binaries
+
+Published artifacts can be found in the
+[Maven Central Repository](https://central.sonatype.com/artifact/uk.autores/format).
+
+Version numbers follow a *JDK.Major.Minor* scheme.
+
 ## Building
 
 Source and target are JDK17.
@@ -44,9 +51,6 @@ Use Maven wrapper scripts to build:
 ```shell
 code/format/mvnw -f code/format/pom.xml clean install
 ```
-
-Published artifacts can be found in the
-[Maven Central Repository](https://central.sonatype.com/artifact/uk.autores/format).
 
 ## Branches & Tags
 
