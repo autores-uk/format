@@ -17,20 +17,14 @@ final class Numbers {
     }
 
     private static NumberFormat nf(Locale l, FormatVariable variable) {
-        switch (variable.style()) {
-            case INTEGER:
-                return NumberFormat.getIntegerInstance(l);
-            case CURRENCY:
-                return NumberFormat.getCurrencyInstance(l);
-            case PERCENT:
-                return NumberFormat.getPercentInstance(l);
-            case SUBFORMAT:
-                return new DecimalFormat(variable.subformat(), DecimalFormatSymbols.getInstance(l));
-            case COMPACT_LONG:
-                return NumberFormat.getCompactNumberInstance(l, NumberFormat.Style.LONG);
-            case COMPACT_SHORT:
-                return NumberFormat.getCompactNumberInstance(l, NumberFormat.Style.SHORT);
-        }
-        return NumberFormat.getInstance(l);
+        return switch (variable.style()) {
+            case INTEGER -> NumberFormat.getIntegerInstance(l);
+            case CURRENCY -> NumberFormat.getCurrencyInstance(l);
+            case PERCENT -> NumberFormat.getPercentInstance(l);
+            case SUBFORMAT -> new DecimalFormat(variable.subformat(), DecimalFormatSymbols.getInstance(l));
+            case COMPACT_LONG -> NumberFormat.getCompactNumberInstance(l, NumberFormat.Style.LONG);
+            case COMPACT_SHORT -> NumberFormat.getCompactNumberInstance(l, NumberFormat.Style.SHORT);
+            default -> NumberFormat.getInstance(l);
+        };
     }
 }

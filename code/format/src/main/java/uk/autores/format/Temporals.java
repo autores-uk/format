@@ -93,14 +93,14 @@ final class Temporals {
 
     private static void format(DateTimeFormatter f, FormatVariable variable, StringBuffer buf, Object... args) {
         Object arg = args[variable.index()];
-        if (!(arg instanceof TemporalAccessor)) {
+        if (arg instanceof TemporalAccessor t) {
+            f.formatTo(t, buf);
+        } else {
             String msg = variable
                     + " requires "
                     + TemporalAccessor.class.getName();
             throw new IllegalArgumentException(msg);
         }
-        TemporalAccessor t = (TemporalAccessor) arg;
-        f.formatTo(t, buf);
     }
 
     private static DateTimeFormatter formatter(Function<FormatStyle, DateTimeFormatter> fn, Locale l, FormatVariable v) {
@@ -112,16 +112,12 @@ final class Temporals {
     }
 
     private static FormatStyle toDtfStyle(FmtStyle style) {
-        switch (style) {
-            case SHORT:
-                return FormatStyle.SHORT;
-            case LONG:
-                return FormatStyle.LONG;
-            case FULL:
-                return FormatStyle.FULL;
-            default:
-                return FormatStyle.MEDIUM;
-        }
+        return switch (style) {
+            case SHORT -> FormatStyle.SHORT;
+            case LONG -> FormatStyle.LONG;
+            case FULL -> FormatStyle.FULL;
+            default -> FormatStyle.MEDIUM;
+        };
     }
 
     private static Object[] handleLegacy(FormatVariable v, Object... args) {
@@ -129,8 +125,7 @@ final class Temporals {
         FmtType type = v.type();
         if (type == FmtType.DATE || type == FmtType.TIME) {
             Object value = args[v.index()];
-            if (value instanceof Date) {
-                Date d = (Date) value;
+            if (value instanceof Date d) {
                 ZoneId zid = ZoneId.systemDefault();
                 ZonedDateTime ldt = ZonedDateTime.ofInstant(d.toInstant(), zid);
 

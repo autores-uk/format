@@ -53,13 +53,10 @@ final class Lists {
     }
 
     private static Object style(FmtStyle style) {
-        switch (style) {
-            case OR:
-                return OR;
-            case UNIT:
-                return UNIT;
-            default:
-                return STANDARD;
-        }
+        return switch (style) {
+            case OR -> OR;
+            case UNIT -> UNIT;
+            default -> STANDARD;
+        };
     }
 }

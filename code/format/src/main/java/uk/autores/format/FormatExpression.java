@@ -84,8 +84,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         Class<?>[] results = new Class<?>[vars];
         Arrays.fill(results, Void.class);
         for (Formatter segment : expr) {
-            if (segment instanceof FormatVariable) {
-                FormatVariable v = (FormatVariable) segment;
+            if (segment instanceof FormatVariable v) {
                 results[v.index()] = v.type().argType();
             }
         }
@@ -101,34 +100,11 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     public Object[] argExamples() {
         Object[] args = new Object[vars];
         for (Formatter f: expr) {
-            if (f instanceof FormatVariable) {
-                setExample((FormatVariable) f, args);
+            if (f instanceof FormatVariable variable) {
+                Examples.set(args, variable);
             }
         }
         return args;
-    }
-
-    private static void setExample(FormatVariable v, Object[] args) {
-        int index = v.index();
-        switch (v.type()) {
-            case NONE:
-                args[index] = "De finibus bonorum et malorum";
-                break;
-            case NUMBER:
-            case CHOICE:
-                args[index] = Examples.EXAMPLE_NUMBER;
-                break;
-            case DATE:
-            case TIME:
-                args[index] = new Date(0);
-                break;
-            case LIST:
-                args[index] = Examples.EXAMPLE_LIST;
-                break;
-            default:
-                args[index] = Examples.EXAMPLE_ZDT;
-                break;
-        }
     }
 
     /**
@@ -166,11 +142,8 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      */
     public boolean needsLocale() {
         for (Formatter segment : expr) {
-            if (segment instanceof FormatVariable) {
-                FormatVariable fv = (FormatVariable) segment;
-                if (fv.type() != FmtType.NONE) {
-                    return true;
-                }
+            if (segment instanceof FormatVariable fv && fv.type() != FmtType.NONE) {
+                return true;
             }
         }
         return false;
@@ -228,11 +201,9 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             Formatter s0 = expr.get(i0);
             int i1 = expr.size() - 2;
             Formatter s1 = expr.get(i1);
-            if (s0 instanceof FormatLiteral && s1 instanceof FormatLiteral) {
+            if (s0 instanceof FormatLiteral l0 && s1 instanceof FormatLiteral l1) {
                 expr.remove(i0);
                 expr.remove(i1);
-                FormatLiteral l0 = (FormatLiteral) s0;
-                FormatLiteral l1 = (FormatLiteral) s1;
                 FormatLiteral combined = new FormatLiteral(
                         l1.toString() + l0,
                         l1.processed() + l0.processed()
@@ -451,8 +422,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         Object[] args = new Object[vars];
         Arrays.fill(args, Void.class);
         for (Formatter segment : expr) {
-            if (segment instanceof FormatVariable) {
-                FormatVariable v = (FormatVariable) segment;
+            if (segment instanceof FormatVariable v) {
                 int index = v.index();
                 if (args[index] == Void.class) {
                     args[index] = v.type().argType();
@@ -467,12 +437,10 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     static int argCount(Formatter[] s) {
         int max = 0;
         for (Formatter segment : s) {
-            if (!(segment instanceof FormatVariable)) {
-                continue;
+            if (segment instanceof FormatVariable v) {
+                int n = v.index() + 1;
+                max = Math.max(max, n);
             }
-            FormatVariable v = (FormatVariable) segment;
-            int n = v.index() + 1;
-            max = Math.max(max, n);
         }
         return max;
     }
