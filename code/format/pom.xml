@@ -34,6 +34,23 @@
         <maven.jxr.plugin.version>3.6.0</maven.jxr.plugin.version>
         <maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
         <central.publishing.maven.plugin>0.8.0</central.publishing.maven.plugin>
+
+        <javadoc.bottom><![CDATA[
+                        Copyright 2024-2025
+                        <br>
+                        <a target="_blank" href="https://github.com/autores-uk/format/blob/main/LICENSE.txt">https://github.com/autores-uk/format/blob/main/LICENSE.txt</a>
+                        <script>
+                            (() => {
+                                const anchors = document.querySelectorAll("a");
+                                anchors.forEach((a) => {
+                                    const href = a.getAttribute("href");
+                                    if (href && href.startsWith("https://")) {
+                                        a.setAttribute("target", "_top");
+                                    }
+                                });
+                            })();
+                        </script>
+                        ]]></javadoc.bottom>
     </properties>
 
     <licenses>
@@ -126,12 +143,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <bottom>
-                        <![CDATA[
-                        Copyright 2024-2025
-                        <a target="_blank" href="https://github.com/autores-uk/format/blob/main/LICENSE.txt">https://github.com/autores-uk/format/blob/main/LICENSE.txt</a>
-                        ]]>
-                    </bottom>
+                    <bottom>${javadoc.bottom}</bottom>
                     <doclint>all</doclint>
                     <failOnWarnings>true</failOnWarnings>
                     <serialwarn>true</serialwarn>
