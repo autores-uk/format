@@ -147,6 +147,7 @@
                     <doclint>all</doclint>
                     <failOnWarnings>true</failOnWarnings>
                     <serialwarn>true</serialwarn>
+                    <additionalOptions>--allow-script-in-comments</additionalOptions>
                 </configuration>
             </plugin>
             <!-- coverage -->
