@@ -8,7 +8,7 @@ import java.util.Locale;
  * Base format expression type.
  * Implementations are equal if their {@link #toString()} values are equal.
  */
-public abstract class Formatter {
+public sealed abstract class Formatter permits FormatVariable, FormatExpression, FormatLiteral {
     Formatter() {}
 
     /**
@@ -28,15 +28,14 @@ public abstract class Formatter {
      * @return the evaluated expression
      */
     public String format(Locale l, Object... args) {
-        StringBuffer buf = new StringBuffer();
+        var buf = new StringBuffer();
         formatTo(l, buf, args);
         return buf.toString();
     }
 
     @Override
     public final boolean equals(Object obj) {
-        if (obj instanceof Formatter) {
-            Formatter other = (Formatter) obj;
+        if (obj instanceof Formatter other) {
             return toString().equals(other.toString());
         }
         return false;
