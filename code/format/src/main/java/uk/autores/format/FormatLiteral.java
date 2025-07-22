@@ -5,7 +5,7 @@ package uk.autores.format;
 import java.util.Locale;
 
 /**
- * Represents non-variable parts of format expressions.
+ * Represents parts of format expressions that are not {@link FormatVariable}s.
  */
 public final class FormatLiteral extends Formatter {
     private final String raw;
