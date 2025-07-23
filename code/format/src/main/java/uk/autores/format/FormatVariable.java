@@ -3,11 +3,15 @@
 package uk.autores.format;
 
 import java.util.Locale;
+import java.util.stream.IntStream;
 
 /**
  * Represents indexed variable expression like <code>{1,number,currency}</code>.
  */
 public final class FormatVariable extends Formatter {
+    private static final FormatVariable[] INTERNED = IntStream.range(0, 5)
+            .mapToObj(FormatVariable::intern)
+            .toArray(FormatVariable[]::new);
 
     private final String raw;
     private final int index;
@@ -15,12 +19,23 @@ public final class FormatVariable extends Formatter {
     private final FmtStyle style;
     private final String subformat;
 
-    FormatVariable(String raw, int index, FmtType type, FmtStyle style, String subformat) {
+    private FormatVariable(String raw, int index, FmtType type, FmtStyle style, String subformat) {
         this.raw = raw;
         this.index = index;
         this.type = type;
         this.style = style;
         this.subformat = subformat;
+    }
+
+    private static FormatVariable intern(int index) {
+        return new FormatVariable("{" + index + "}", index, FmtType.NONE, FmtStyle.NONE, "");
+    }
+
+    static FormatVariable from(String raw, int index, FmtType type, FmtStyle style, String subformat) {
+        if (type == FmtType.NONE && index < INTERNED.length) {
+            return INTERNED[index];
+        }
+        return new FormatVariable(raw, index, type, style, subformat);
     }
 
     /**

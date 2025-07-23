@@ -8,12 +8,28 @@ import java.util.Locale;
  * Represents parts of format expressions that are not {@link FormatVariable}s.
  */
 public final class FormatLiteral extends Formatter {
+    private static final FormatLiteral[] INTERNED = {
+            new FormatLiteral(" ", " "),
+            new FormatLiteral(".", "."),
+            new FormatLiteral("?", "?"),
+            new FormatLiteral("''", "'"),
+    };
+
     private final String raw;
     private final String processed;
 
-    FormatLiteral(String raw, String processed) {
+    private FormatLiteral(String raw, String processed) {
         this.raw = raw;
         this.processed = processed;
+    }
+
+    static FormatLiteral from(String raw, String processed) {
+        for (FormatLiteral in : INTERNED) {
+            if (in.raw.equals(raw)) {
+                return in;
+            }
+        }
+        return new FormatLiteral(raw, processed);
     }
 
     @Override

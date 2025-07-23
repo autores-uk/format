@@ -196,17 +196,17 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     }
 
     private static void rationalize(List<Formatter> expr) {
-        if (expr.size() > 1) {
-            int i0 = expr.size() - 1;
-            Formatter s0 = expr.get(i0);
-            int i1 = expr.size() - 2;
-            Formatter s1 = expr.get(i1);
-            if (s0 instanceof FormatLiteral l0 && s1 instanceof FormatLiteral l1) {
-                expr.remove(i0);
-                expr.remove(i1);
-                FormatLiteral combined = new FormatLiteral(
-                        l1.toString() + l0,
-                        l1.processed() + l0.processed()
+        int size = expr.size();
+        if (size > 1) {
+            int last = size - 1;
+            int lastButOne = last - 1;
+            if (expr.get(lastButOne) instanceof FormatLiteral head
+                    && expr.get(last) instanceof FormatLiteral tail) {
+                expr.remove(last);
+                expr.remove(lastButOne);
+                var combined = FormatLiteral.from(
+                        head.toString() + tail,
+                        head.processed() + tail.processed()
                 );
                 expr.add(combined);
             }
@@ -216,13 +216,13 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     private static void addRaw(List<Formatter> list, CharSequence seq, int start, int end) {
         if (end - start > 0) {
             String raw = seq.subSequence(start, end).toString();
-            list.add(new FormatLiteral(raw, raw));
+            list.add(FormatLiteral.from(raw, raw));
         }
     }
 
     private static FormatLiteral parseEscaped(CharSequence seq, int offset) {
         if (isEscapedQuote(seq, offset)) {
-            return new FormatLiteral("''", "'");
+            return FormatLiteral.from("''", "'");
         }
         StringBuilder buf = new StringBuilder();
         int end = offset;
@@ -241,7 +241,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             buf.append(ch);
         }
         String raw = seq.subSequence(offset, end + 1).toString();
-        return new FormatLiteral(raw, buf.toString());
+        return FormatLiteral.from(raw, buf.toString());
     }
 
     private static boolean isEscapedQuote(CharSequence sequence, int offset) {
@@ -386,7 +386,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
 
     private static FormatVariable newVar(CharSequence sequence, int offset, int end, int index, FmtType type, FmtStyle style, String subformat) {
         String raw = sequence.subSequence(offset, end).toString();
-        FormatVariable v = new FormatVariable(raw, index, type, style, subformat);
+        FormatVariable v = FormatVariable.from(raw, index, type, style, subformat);
         validate(v);
         return v;
     }
