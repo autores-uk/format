@@ -52,7 +52,7 @@ public enum FmtType {
     /**
      * Maps to {@link java.text.ChoiceFormat}
      * <p>
-     *     Example: <code>There {0,choice,0#are no files|1#is one file|1<are {0,number,integer} files}.</code>
+     *     Example: <code>There {0,choice,0#are no files|1#is one file|1&lt;are {0,number,integer} files}.</code>
      * </p>
      */
     CHOICE(Choices::format, "choice", Number.class, FmtStyle.SUBFORMAT),
