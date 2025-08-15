@@ -21,23 +21,68 @@ import static java.util.Arrays.asList;
  * @see FormatVariable#type()
  */
 public enum FmtType {
-    /** Indicates that no type has been specified. */
+    /**
+     * Indicates that no type has been specified.
+     * <p>
+     *     Example: <code>{0}</code>
+     * </p>
+     */
     NONE(AnyObject::format, "(none)", Object.class, FmtStyle.NONE),
-    /** Maps to {@link java.text.NumberFormat} */
+    /**
+     * Maps to {@link java.text.NumberFormat}.
+     * <p>
+     *     Example: <code>{0,number}</code>
+     * </p>
+     */
     NUMBER(Numbers::format, "number", Number.class, FmtStyle.NONE, FmtStyle.INTEGER, FmtStyle.CURRENCY, FmtStyle.PERCENT, FmtStyle.SUBFORMAT, FmtStyle.COMPACT_SHORT, FmtStyle.COMPACT_LONG),
-    /** Maps to {@link java.time.format.DateTimeFormatter} */
+    /**
+     * Maps to {@link java.time.format.DateTimeFormatter}
+     * <p>
+     *     Example: <code>{0,date}</code>
+     * </p>
+     */
     DATE(Temporals::date, "date", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
-    /** Maps to {@link java.time.format.DateTimeFormatter} */
+    /**
+     * Maps to {@link java.time.format.DateTimeFormatter}
+     * <p>
+     *     Example: <code>{0,time}</code>
+     * </p>
+     */
     TIME(Temporals::time, "time", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
-    /** Maps to {@link java.text.ChoiceFormat} */
+    /**
+     * Maps to {@link java.text.ChoiceFormat}
+     * <p>
+     *     Example: <code>There {0,choice,0#are no files|1#is one file|1<are {0,number,integer} files}.</code>
+     * </p>
+     */
     CHOICE(Choices::format, "choice", Number.class, FmtStyle.SUBFORMAT),
-    /** Maps to {@link java.time.format.DateTimeFormatter} */
+    /**
+     * Maps to {@link java.time.format.DateTimeFormatter}
+     * <p>
+     *     Example: <code>{0,dtf_date}</code>
+     * </p>
+     */
     DTF_DATE(Temporals::date, "dtf_date", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
-    /** Maps to {@link java.time.format.DateTimeFormatter} */
+    /**
+     * Maps to {@link java.time.format.DateTimeFormatter}
+     * <p>
+     *     Example: <code>{0,dtf_time}</code>
+     * </p>
+     */
     DTF_TIME(Temporals::time, "dtf_time", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
-    /** Maps to {@link java.time.format.DateTimeFormatter} */
+    /**
+     * Maps to {@link java.time.format.DateTimeFormatter}
+     * <p>
+     *     Example: <code>{0,dtf_datetime}</code>
+     * </p>
+     */
     DTF_DATETIME(Temporals::datetime, "dtf_datetime", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
-    /** Maps to {@link java.time.format.DateTimeFormatter#BASIC_ISO_DATE} */
+    /**
+     * Maps to {@link java.time.format.DateTimeFormatter#BASIC_ISO_DATE}
+     * <p>
+     *     Example: <code>{0,BASIC_ISO_DATE}</code>
+     * </p>
+     */
     BASIC_ISO_DATE(Temporals::BASIC_ISO_DATE, "BASIC_ISO_DATE", TemporalAccessor.class, FmtStyle.NONE),
     /** Maps to {@link java.time.format.DateTimeFormatter#ISO_LOCAL_DATE} */
     ISO_LOCAL_DATE(Temporals::ISO_LOCAL_DATE, "ISO_LOCAL_DATE", TemporalAccessor.class, FmtStyle.NONE),
@@ -67,7 +112,12 @@ public enum FmtType {
     ISO_INSTANT(Temporals::ISO_INSTANT, "ISO_INSTANT", TemporalAccessor.class, FmtStyle.NONE),
     /** Maps to {@link java.time.format.DateTimeFormatter#RFC_1123_DATE_TIME} */
     RFC_1123_DATE_TIME(Temporals::RFC_1123_DATE_TIME, "RFC_1123_DATE_TIME", TemporalAccessor.class, FmtStyle.NONE),
-    /** Maps to <a href="https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/text/ListFormat.html">java.text.ListFormat</a> */
+    /**
+     * Maps to <a href="https://docs.oracle.com/en/java/javase/22/docs/api/java.base/java/text/ListFormat.html">java.text.ListFormat</a>
+     * <p>
+     *     Example: <code>{0,list}</code>
+     * </p>
+     */
     LIST(Lists::format, "list", List.class, FmtStyle.NONE, FmtStyle.OR, FmtStyle.UNIT);
 
     private final Fmt fn;

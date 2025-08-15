@@ -6,6 +6,8 @@ import java.text.ChoiceFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -31,6 +33,23 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         this.vars = vars;
     }
 
+    /**
+     * <p>
+     *     Formats the expression.
+     *     The argument array is expected to be at least {@link #argCount()} in length
+     *     with instances supported by the underlying {@link java.text.Format} types.
+     * </p>
+     * <p>
+     *     Generally the expected types are defined by {@link FmtType#argType()}.
+     *     {@link Date} instances will be converted to {@link ZonedDateTime} for date/time formatting
+     *     using {@link ZoneId#systemDefault()}.
+     *     {@link Object[]} arrays can be used for {@link FmtType#LIST}.
+     * </p>
+     *
+     * @param l    the locale
+     * @param buf  the target buffer
+     * @param args array of arguments containing elements for any indices evaluated
+     */
     @Override
     public void formatTo(Locale l, StringBuffer buf, Object... args) {
         for (Formatter f : expr) {
@@ -71,7 +90,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
 
     /**
      * <p>
-     *     The types for any {@link FormatVariable}s.
+     *     The expected types for any {@link FormatVariable}s.
      * </p>
      * <p>
      *     The {@link FmtType#argType()}s map to the {@link FormatVariable#index()}.
@@ -158,35 +177,42 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     }
 
     /**
-     * Parses a {@link java.text.MessageFormat} expression.
+     * <p>
+     *     Parses a {@link java.text.MessageFormat} expression.
+     * </p>
+     * <p>
+     *     See the {@link java.text.MessageFormat} type for supported expressions.
+     * </p>
      *
-     * @param seq source text
+     * @param pattern source text
      * @return parsed expression
+     * @throws IllegalArgumentException on malformed expressions
      */
-    public static FormatExpression parse(CharSequence seq) {
+    public static FormatExpression parse(CharSequence pattern) {
+        Objects.requireNonNull(pattern, "Pattern cannot be null");
         List<Formatter> list = new ArrayList<>();
         int offset = 0;
-        for (int i = 0; i < seq.length(); i++) {
-            char ch = seq.charAt(i);
+        for (int i = 0; i < pattern.length(); i++) {
+            char ch = pattern.charAt(i);
             if (ch == '\'') {
-                addRaw(list, seq, offset, i);
-                FormatLiteral segment = parseEscaped(seq, i);
+                addRaw(list, pattern, offset, i);
+                FormatLiteral segment = parseEscaped(pattern, i);
                 list.add(segment);
                 rationalize(list);
                 i += segment.toString().length();
                 offset = i;
             } else if (ch == '{') {
-                addRaw(list, seq, offset, i);
+                addRaw(list, pattern, offset, i);
                 rationalize(list);
-                FormatVariable segment = parseVariable(seq, i);
+                FormatVariable segment = parseVariable(pattern, i);
                 list.add(segment);
                 i += segment.toString().length();
                 offset = i;
                 i--;
             }
         }
-        if (offset < seq.length()) {
-            addRaw(list, seq, offset, seq.length());
+        if (offset < pattern.length()) {
+            addRaw(list, pattern, offset, pattern.length());
             rationalize(list);
         }
         Formatter[] expr = list.toArray(new Formatter[0]);
