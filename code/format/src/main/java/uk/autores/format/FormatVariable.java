@@ -78,6 +78,18 @@ public final class FormatVariable extends Formatter {
         return subformat;
     }
 
+    /**
+     * <p>
+     *     Formats the variable and appends it to the buffer.
+     * </p>
+     * <p>
+     *     The argument array must contain a suitable element at {@link #index()}.
+     * </p>
+     *
+     * @param l    the locale
+     * @param buf  the target buffer
+     * @param args array of arguments containing elements for any indices evaluated
+     */
     @Override
     public void formatTo(Locale l, StringBuffer buf,  Object... args) {
         type.formatter().format(l, this, buf, args);

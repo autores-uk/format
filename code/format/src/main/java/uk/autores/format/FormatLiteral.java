@@ -32,6 +32,15 @@ public final class FormatLiteral extends Formatter {
         return new FormatLiteral(raw, processed);
     }
 
+    /**
+     * <p>
+     *     Appends the {@link #processed()} literal to the buffer.
+     * </p>
+     *
+     * @param l    the locale
+     * @param buf  the target buffer
+     * @param args array of arguments containing elements for any indices evaluated
+     */
     @Override
     public void formatTo(Locale l, StringBuffer buf, Object... args) {
         buf.append(processed);
