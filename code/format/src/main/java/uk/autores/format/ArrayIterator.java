@@ -12,6 +12,7 @@ final class ArrayIterator<E> implements Iterator<E> {
         this.a = array;
     }
 
+    @SafeVarargs
     static <E> Iterator<E> over(E... array) {
         if (array.length == 0) {
             return Collections.emptyIterator();
