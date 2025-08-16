@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 
 import static java.util.Arrays.asList;
@@ -469,5 +470,39 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             }
         }
         return max;
+    }
+
+    /**
+     * <p>
+     *     Tests if two expressions can consume the same format arguments.
+     *     Expressions are considered compatible if the same elements
+     *     are returned from {@link #argTypes()}.
+     *     This test is imperfect - some date expressions are compatible with different
+     *     {@link TemporalAccessor} implementations.
+     * </p>
+     *
+     * @param other another expression
+     * @return true if compatible
+     * @since 17.1.1
+     */
+    public boolean compatible(FormatExpression other) {
+        if (this == other) {
+            return true;
+        }
+        if (this.vars != other.vars) {
+            return false;
+        }
+        return sameTypes(this, other);
+    }
+
+    private static boolean sameTypes(FormatExpression f0, FormatExpression f1) {
+        var t0 = f0.argTypes();
+        var t1 = f1.argTypes();
+        for (int i = 0; i < t0.length; i++) {
+            if (t0[i] != t1[i]) {
+                return false;
+            }
+        }
+        return true;
     }
 }

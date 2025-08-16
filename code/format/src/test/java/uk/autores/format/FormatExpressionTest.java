@@ -279,4 +279,35 @@ class FormatExpressionTest {
             assertEquals(expected, actual);
         }
     }
+
+    @Test
+    void compatible() {
+        {
+            var left = FormatExpression.parse("{0}");
+            var right = FormatExpression.parse("foo {0} bar");
+            assertTrue(left.compatible(left));
+            assertTrue(left.compatible(right));
+            assertTrue(right.compatible(right));
+        }
+        {
+            var left = FormatExpression.parse("{0,number}");
+            var right = FormatExpression.parse("foo {0} bar");
+            assertFalse(left.compatible(right));
+        }
+        {
+            var left = FormatExpression.parse("{0}");
+            var right = FormatExpression.parse("{0} {1}");
+            assertFalse(left.compatible(right));
+        }
+        {
+            var left = FormatExpression.parse("{0,date}");
+            var right = FormatExpression.parse("foo {0,dtf_date} bar");
+            assertTrue(left.compatible(right));
+        }
+        {
+            var left = FormatExpression.parse("{0,date} {2,number} {3}");
+            var right = FormatExpression.parse("{3} {2,number,currency} {0,dtf_date}");
+            assertTrue(left.compatible(right));
+        }
+    }
 }
