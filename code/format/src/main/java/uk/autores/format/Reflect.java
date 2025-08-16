@@ -48,7 +48,7 @@ final class Reflect {
         R load() throws Exception;
     }
 
-    public static class InvocationException extends RuntimeException {
+    private static class InvocationException extends RuntimeException {
         private InvocationException(Throwable t) {
             super(t);
         }
