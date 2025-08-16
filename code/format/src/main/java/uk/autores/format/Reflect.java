@@ -3,10 +3,10 @@ package uk.autores.format;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-final class Reflection {
-    private static final ClassLoader CL = Reflection.class.getClassLoader();
+final class Reflect {
+    private static final ClassLoader CL = Reflect.class.getClassLoader();
 
-    private Reflection() {}
+    private Reflect() {}
 
     static Class<?> type(String c, String msg) {
         return load(() -> CL.loadClass(c), msg);

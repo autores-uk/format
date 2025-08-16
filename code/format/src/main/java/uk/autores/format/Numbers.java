@@ -12,12 +12,7 @@ final class Numbers {
     private Numbers() {}
 
     static void format(Locale l, FormatVariable variable, StringBuffer buf, Object... args) {
-        Object value = args[variable.index()];
-        nf(l, variable).format(value, buf, new FieldPosition(0));
-    }
-
-    private static NumberFormat nf(Locale l, FormatVariable variable) {
-        return switch (variable.style()) {
+        var nf = switch (variable.style()) {
             case INTEGER -> NumberFormat.getIntegerInstance(l);
             case CURRENCY -> NumberFormat.getCurrencyInstance(l);
             case PERCENT -> NumberFormat.getPercentInstance(l);
@@ -26,5 +21,8 @@ final class Numbers {
             case COMPACT_SHORT -> NumberFormat.getCompactNumberInstance(l, NumberFormat.Style.SHORT);
             default -> NumberFormat.getInstance(l);
         };
+
+        Object value = args[variable.index()];
+        nf.format(value, buf, new FieldPosition(0));
     }
 }

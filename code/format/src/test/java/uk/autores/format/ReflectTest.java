@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ReflectionTest {
+public class ReflectTest {
 
     public static final String OK = "OK";
 
@@ -22,13 +22,13 @@ public class ReflectionTest {
     @Test
     void type() {
         {
-            Class<?> me = Reflection.type(ReflectionTest.class.getName(), "");
-            assertSame(ReflectionTest.class, me);
+            Class<?> me = Reflect.type(ReflectTest.class.getName(), "");
+            assertSame(ReflectTest.class, me);
         }
         {
             String msg = "error abc";
             try {
-                Reflection.type("DoesNotExist", msg);
+                Reflect.type("DoesNotExist", msg);
                 fail();
             } catch (Exception e) {
                 assertInstanceOf(RuntimeException.class, e);
@@ -39,32 +39,32 @@ public class ReflectionTest {
 
     @Test
     void field() {
-        Class<?> me = Reflection.type(ReflectionTest.class.getName(), "");
-        Object actual = Reflection.field(me, "OK");
+        Class<?> me = Reflect.type(ReflectTest.class.getName(), "");
+        Object actual = Reflect.field(me, "OK");
         assertEquals(OK, actual);
     }
 
     @Test
     void invoke() {
-        Class<?> me = Reflection.type(ReflectionTest.class.getName(), "");
+        Class<?> me = Reflect.type(ReflectTest.class.getName(), "");
         {
-            Method m = Reflection.meth(me, "ok");
-            Object actual = Reflection.invoke(null, m);
+            Method m = Reflect.meth(me, "ok");
+            Object actual = Reflect.invoke(null, m);
             assertEquals(OK, actual);
         }
         {
-            Method m = Reflection.meth(me, "throwUp", Exception.class);
+            Method m = Reflect.meth(me, "throwUp", Exception.class);
             try {
-                Reflection.invoke(null, m, new TestException());
+                Reflect.invoke(null, m, new TestException());
                 fail();
             } catch (Exception e) {
                 assertInstanceOf(InvocationTargetException.class, e.getCause());
             }
         }
         {
-            Method m = Reflection.meth(me, "throwUp", Exception.class);
+            Method m = Reflect.meth(me, "throwUp", Exception.class);
             try {
-                Reflection.invoke(null, m, new TestRuntimeException());
+                Reflect.invoke(null, m, new TestRuntimeException());
                 fail();
             } catch (Exception e) {
                 assertInstanceOf(TestRuntimeException.class, e);

@@ -92,11 +92,11 @@ final class Temporals {
     }
 
     private static void format(DateTimeFormatter f, FormatVariable variable, StringBuffer buf, Object... args) {
-        Object arg = args[variable.index()];
+        var arg = args[variable.index()];
         if (arg instanceof TemporalAccessor t) {
             f.formatTo(t, buf);
         } else {
-            String msg = variable
+            var msg = variable
                     + " requires "
                     + TemporalAccessor.class.getName();
             throw new IllegalArgumentException(msg);
@@ -126,8 +126,8 @@ final class Temporals {
         if (type == FmtType.DATE || type == FmtType.TIME) {
             Object value = args[v.index()];
             if (value instanceof Date d) {
-                ZoneId zid = ZoneId.systemDefault();
-                ZonedDateTime ldt = ZonedDateTime.ofInstant(d.toInstant(), zid);
+                var zid = ZoneId.systemDefault();
+                var ldt = ZonedDateTime.ofInstant(d.toInstant(), zid);
 
                 result = args.clone();
                 result[v.index()] = ldt;

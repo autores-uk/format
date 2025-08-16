@@ -11,7 +11,6 @@ final class Examples {
 
     private static final List<?> EXAMPLE_LIST = List.of("Pugh", "Pugh", "Barney McGrew", "Cuthbert", "Dibble", "Grub");
     private static final ZonedDateTime EXAMPLE_ZDT = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
-    private static final Integer EXAMPLE_NUMBER = 10_000_000;
 
     static void set(Object[] args, FormatVariable v) {
         int index = v.index();
@@ -21,7 +20,7 @@ final class Examples {
                 break;
             case NUMBER:
             case CHOICE:
-                args[index] = EXAMPLE_NUMBER;
+                args[index] = 10_000_000;
                 break;
             case DATE:
             case TIME:

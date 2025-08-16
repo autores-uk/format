@@ -7,19 +7,19 @@ final class Chars {
         if (objs.length == 1) {
             return objs[0].toString();
         }
-        char[] arr = new char[len(objs)];
+        var buffer = new char[len(objs)];
         int offset = 0;
         for (Object o : objs) {
-            offset = concat(arr, offset, o);
+            offset = concat(buffer, offset, o);
         }
-        return new String(arr);
+        return new String(buffer);
     }
 
-    private static int concat(char[] arr, int offset, Object o) {
-        String s = o.toString();
+    private static int concat(char[] buffer, int offset, Object o) {
+        var s = o.toString();
         int len = s.length();
         for (int i = 0; i < len; i++) {
-            arr[i + offset] = s.charAt(i);
+            buffer[i + offset] = s.charAt(i);
         }
         return offset + len;
     }

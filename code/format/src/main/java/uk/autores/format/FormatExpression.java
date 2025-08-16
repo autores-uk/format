@@ -69,7 +69,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      */
     @Override
     public Iterator<Formatter> iterator() {
-        return asList(expr).iterator();
+        return ArrayIterator.over(expr);
     }
 
     /**
@@ -100,7 +100,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * @return types by index
      */
     public Class<?>[] argTypes() {
-        Class<?>[] results = new Class<?>[vars];
+        var results = new Class<?>[vars];
         Arrays.fill(results, Void.class);
         for (Formatter segment : expr) {
             if (segment instanceof FormatVariable v) {
@@ -117,7 +117,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * @see FmtType#argType()
      */
     public Object[] argExamples() {
-        Object[] args = new Object[vars];
+        var args = new Object[vars];
         for (Formatter f: expr) {
             if (f instanceof FormatVariable variable) {
                 Examples.set(args, variable);
@@ -134,17 +134,17 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      */
     public int estimateLen(Locale l) {
         Object[] args = argExamples();
-        StringBuffer buf = new StringBuffer();
+        var buf = new StringBuffer();
         int len = 0;
         for (Formatter segment : expr) {
             segment.formatTo(l, buf, args);
             len += buf.length();
             buf.delete(0, buf.length());
         }
-        return normalize(len);
+        return powerOf2(len);
     }
 
-    private int normalize(int n) {
+    private int powerOf2(int n) {
         int x = 8;
         while (x < n) {
             x *= 2;
@@ -190,7 +190,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      */
     public static FormatExpression parse(CharSequence pattern) {
         Objects.requireNonNull(pattern, "Pattern cannot be null");
-        List<Formatter> list = new ArrayList<>();
+        var list = new ArrayList<Formatter>();
         int offset = 0;
         for (int i = 0; i < pattern.length(); i++) {
             char ch = pattern.charAt(i);
@@ -250,7 +250,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         if (isEscapedQuote(seq, offset)) {
             return FormatLiteral.from("''", "'");
         }
-        StringBuilder buf = new StringBuilder();
+        var buf = new StringBuilder();
         int end = offset;
         for (int i = offset + 1; i < seq.length(); i++, end++) {
             if (isEscapedQuote(seq, i)) {
@@ -266,7 +266,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             }
             buf.append(ch);
         }
-        String raw = seq.subSequence(offset, end + 1).toString();
+        var raw = seq.subSequence(offset, end + 1).toString();
         return FormatLiteral.from(raw, buf.toString());
     }
 
@@ -331,7 +331,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
 
     private static final FmtType[] NAMED_FMT_TYPES;
     static {
-        List<FmtType> list = new ArrayList<>(asList(FmtType.values()));
+        var list = new ArrayList<>(asList(FmtType.values()));
         list.remove(FmtType.NONE);
         NAMED_FMT_TYPES = list.toArray(new FmtType[0]);
         Arrays.sort(NAMED_FMT_TYPES, FormatExpression::longestFirst);
@@ -363,7 +363,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     }
 
     private static String parseSubformat(CharSequence sequence, int offset) {
-        StringBuilder buf = new StringBuilder();
+        var buf = new StringBuilder();
         int nested = 0;
         boolean quoted = false;
         for (int i = offset; i < sequence.length(); i++) {
@@ -460,7 +460,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         }
     }
 
-    static int argCount(Formatter[] s) {
+    private static int argCount(Formatter[] s) {
         int max = 0;
         for (Formatter segment : s) {
             if (segment instanceof FormatVariable v) {
