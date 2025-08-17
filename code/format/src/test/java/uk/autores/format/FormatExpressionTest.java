@@ -309,5 +309,10 @@ class FormatExpressionTest {
             var right = FormatExpression.parse("{3} {2,number,currency} {0,dtf_date}");
             assertTrue(left.compatible(right));
         }
+        {
+            var left = FormatExpression.parse("{1}");
+            var right = FormatExpression.parse("{0}{1}");
+            assertFalse(left.compatible(right));
+        }
     }
 }

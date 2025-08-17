@@ -514,6 +514,6 @@ public final class FormatExpression extends Formatter implements Iterable<Format
                 return other.type() != fv.type();
             }
         }
-        return false;
+        return true;
     }
 }
