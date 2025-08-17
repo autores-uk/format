@@ -475,10 +475,12 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     /**
      * <p>
      *     Tests if two expressions can consume the same format arguments.
-     *     Expressions are considered compatible if the same elements
-     *     are returned from {@link #argTypes()}.
-     *     This test is imperfect - some date expressions are compatible with different
-     *     {@link TemporalAccessor} implementations.
+     *     Used to check if localised strings are compatible.
+     * </p>
+     * <p>
+     *     Expressions are considered compatible if all {@link FormatVariable}s
+     *     have matching {@link FormatVariable#index()} and {@link FormatVariable#type()}.
+     *     {@link FormatVariable#style()} is NOT checked to allow locale-specific styles.
      * </p>
      *
      * @param other another expression
@@ -492,6 +494,27 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         if (this.vars != other.vars) {
             return false;
         }
-        return Arrays.equals(this.argTypes(), other.argTypes());
+        return compatible(this, other)
+                && compatible(other, this);
+    }
+
+    private static boolean compatible(FormatExpression e0, FormatExpression e1) {
+        for (int i = 0, len = e0.expr.length; i < len; i++) {
+            var f = e0.expr[i];
+            if (f instanceof FormatVariable fv && mismatch(e1, fv)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean mismatch(FormatExpression fe, FormatVariable other) {
+        for (var f : fe.expr) {
+            if (f instanceof FormatVariable fv
+                    && other.index() == fv.index()) {
+                return other.type() != fv.type();
+            }
+        }
+        return false;
     }
 }
