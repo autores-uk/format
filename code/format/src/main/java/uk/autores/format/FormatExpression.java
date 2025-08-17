@@ -492,17 +492,6 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         if (this.vars != other.vars) {
             return false;
         }
-        return sameTypes(this, other);
-    }
-
-    private static boolean sameTypes(FormatExpression f0, FormatExpression f1) {
-        var t0 = f0.argTypes();
-        var t1 = f1.argTypes();
-        for (int i = 0; i < t0.length; i++) {
-            if (t0[i] != t1[i]) {
-                return false;
-            }
-        }
-        return true;
+        return Arrays.equals(this.argTypes(), other.argTypes());
     }
 }
