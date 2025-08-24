@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 
@@ -478,8 +479,13 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * </p>
      * <p>
      *     Expressions are considered compatible if all {@link FormatVariable}s
-     *     have matching {@link FormatVariable#index()} and {@link FormatVariable#type()}.
+     *     have matching {@link FormatVariable#index()} and {@link FormatVariable#type()}'s
+     *     {@link FmtType#argType()} are the same.
      *     {@link FormatVariable#style()} is NOT checked to allow locale-specific styles.
+     * </p>
+     * <p>
+     *     "{0,dtf_date}" and "{0,dtf_time}" are considered compatible
+     *     because "{0,dtf_date} {0,dtf_time}" is a valid expression.
      * </p>
      *
      * @param other another expression
@@ -511,7 +517,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         for (var f : fe.expr) {
             if (f instanceof FormatVariable fv
                     && other.index() == fv.index()) {
-                return other.type() != fv.type();
+                return other.type().argType() != fv.type().argType();
             }
         }
         return true;

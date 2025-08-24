@@ -301,8 +301,8 @@ class FormatExpressionTest {
         }
         {
             var left = FormatExpression.parse("{0,date}");
-            var right = FormatExpression.parse("foo {0,dtf_date} bar");
-            assertFalse(left.compatible(right));
+            var right = FormatExpression.parse("foo {0,dtf_date} bar {0,dtf_time}");
+            assertTrue(left.compatible(right));
         }
         {
             var left = FormatExpression.parse("{0,dtf_date} {2,number} {3}");
