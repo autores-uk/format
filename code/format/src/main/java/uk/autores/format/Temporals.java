@@ -123,7 +123,7 @@ final class Temporals {
     private static Object[] handleLegacy(FormatVariable v, Object... args) {
         Object[] result = args;
         FmtType type = v.type();
-        if (type == FmtType.DATE || type == FmtType.TIME) {
+        if (type == FmtType.DATE || type == FmtType.TIME || type == FmtType.NONE) {
             Object value = args[v.index()];
             if (value instanceof Date d) {
                 var zid = ZoneId.systemDefault();

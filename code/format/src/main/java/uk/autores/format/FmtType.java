@@ -27,7 +27,7 @@ public enum FmtType {
      *     Example: <code>{0}</code>
      * </p>
      */
-    NONE((l, v, buf, args) -> buf.append(args[v.index()]), "(none)", Object.class, FmtStyle.NONE),
+    NONE(Any::format, "(none)", Object.class, FmtStyle.NONE),
     /**
      * Maps to {@link java.text.NumberFormat}.
      * <p>

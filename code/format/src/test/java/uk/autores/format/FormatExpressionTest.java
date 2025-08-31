@@ -8,6 +8,7 @@ import org.junit.jupiter.api.function.Executable;
 import uk.autores.format.testing.TestEquality;
 import uk.autores.format.testing.TestStrings;
 
+import java.text.FieldPosition;
 import java.text.MessageFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -314,5 +315,25 @@ class FormatExpressionTest {
             var right = FormatExpression.parse("{0}{1}");
             assertFalse(left.compatible(right));
         }
+    }
+
+    @Test
+    void rawNumbers() {
+        assertSame(Integer.MAX_VALUE);
+    }
+
+    @Test
+    void rawDates() {
+        assertSame(new Date(0));
+    }
+
+    private void assertSame(Object... args) {
+        var buf = new StringBuffer();
+        new MessageFormat("{0}", Locale.ENGLISH).format(args, buf, new FieldPosition(0));
+        var expected = buf.toString();
+        buf = new StringBuffer();
+        FormatExpression.parse("{0}").formatTo(Locale.ENGLISH, buf, args);
+        var actual = buf.toString();
+        assertEquals(expected, actual);
     }
 }
