@@ -1,7 +1,7 @@
 package uk.autores.format;
 
+import java.text.DateFormat;
 import java.text.FieldPosition;
-import java.text.MessageFormat;
 import java.util.Date;
 import java.util.Locale;
 
@@ -12,8 +12,9 @@ final class Any {
         Object arg = args[v.index()];
         if (arg instanceof Number) {
             Numbers.format(l, v, buf, args);
-        } else if (arg instanceof Date) {
-            new MessageFormat(v.toString(), l).format(args, buf, new FieldPosition(0));
+        } else if (arg instanceof Date d) {
+            DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, l)
+                    .format(d, buf, new FieldPosition(0));
         } else {
             buf.append(arg);
         }
