@@ -329,11 +329,14 @@ class FormatExpressionTest {
 
     private void assertSame(Object... args) {
         var buf = new StringBuffer();
-        new MessageFormat("{0}", Locale.ENGLISH).format(args, buf, new FieldPosition(0));
-        var expected = buf.toString();
-        buf = new StringBuffer();
-        FormatExpression.parse("{0}").formatTo(Locale.ENGLISH, buf, args);
-        var actual = buf.toString();
-        assertEquals(expected, actual);
+        for (var l : Locale.getAvailableLocales()) {
+            new MessageFormat("{0}", l).format(args, buf, new FieldPosition(0));
+            var expected = buf.toString();
+            buf = new StringBuffer();
+            FormatExpression.parse("{0}").formatTo(l, buf, args);
+            var actual = buf.toString();
+            assertEquals(expected, actual);
+            buf.delete(0, buf.length());
+        }
     }
 }
