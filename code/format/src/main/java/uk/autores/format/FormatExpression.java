@@ -480,7 +480,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      *     Expressions are considered compatible if all {@link FormatVariable}s
      *     have matching {@link FormatVariable#index()} and {@link FormatVariable#type()}'s
      *     {@link FmtType#argType()} are the same.
-     *     {@link FormatVariable#style()} is NOT checked to allow locale-specific styles.
+     *     {@link FmtType#NONE} is considered compatible with all other types.
      * </p>
      * <p>
      *     "{0,dtf_date}" and "{0,dtf_time}" are considered compatible
