@@ -27,6 +27,7 @@ class FormatVariablesTest {
             assertEquals(1, actual.size());
             assertEquals(1, actual.iterator().next().index());
             assertEquals(FormatVariables.Problem.MISSING, actual.iterator().next().problem());
+            assertNotNull(actual.toString());
         }
         {
             var left = FormatExpression.parse("{0}");
@@ -40,6 +41,7 @@ class FormatVariablesTest {
             var actual = FormatVariables.incompatibilities(left, right);
             assertEquals(2, actual.size());
             assertEquals(FormatVariables.Problem.NONEXISTENT, actual.iterator().next().problem());
+            assertNotNull(actual.toString());
         }
         {
             var left = FormatExpression.parse("{0,number}");
@@ -48,6 +50,7 @@ class FormatVariablesTest {
             assertEquals(1, actual.size());
             assertEquals(0, actual.iterator().next().index());
             assertEquals(FormatVariables.Problem.MISMATCH, actual.iterator().next().problem());
+            assertNotNull(actual.toString());
         }
         {
             var left = FormatExpression.parse("{0}");
