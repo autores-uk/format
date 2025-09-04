@@ -172,18 +172,19 @@ class FormatExpressionTest {
 
     @Test
     void format() {
-        Locale l = Locale.ENGLISH;
+        var l = Locale.ENGLISH;
+        //for (var l : Locale.getAvailableLocales()) {
+            for (String t : TestStrings.valid()) {
+                MessageFormat mf = new MessageFormat(t, l);
+                FormatExpression expression = FormatExpression.parse(t);
+                Object[] args = expression.argExamples();
 
-        for (String t : TestStrings.valid()) {
-            MessageFormat mf = new MessageFormat(t, l);
-            FormatExpression expression = FormatExpression.parse(t);
-            Object[] args = expression.argExamples();
+                String expected = mf.format(args);
+                String actual = expression.format(l, args);
 
-            String expected = mf.format(args);
-            String actual = expression.format(l, args);
-
-            assertEquals(expected, actual, t);
-        }
+                assertEquals(expected, actual, t + " " + l);
+            }
+        //}
     }
 
     @Test
@@ -241,8 +242,6 @@ class FormatExpressionTest {
     @Test
     void noMixedTypes() {
         String[] mixed = {
-                "{0} {0,number}",
-                "{0} {0,date}",
                 "{0,number} {0,time}",
                 "{0,choice} {0,date}",
         };
@@ -278,42 +277,6 @@ class FormatExpressionTest {
             boolean actual = expression.needsLocale();
 
             assertEquals(expected, actual);
-        }
-    }
-
-    @Test
-    void compatible() {
-        {
-            var left = FormatExpression.parse("{0}");
-            var right = FormatExpression.parse("foo {0} bar");
-            assertTrue(left.compatible(left));
-            assertTrue(left.compatible(right));
-            assertTrue(right.compatible(right));
-        }
-        {
-            var left = FormatExpression.parse("{0,number}");
-            var right = FormatExpression.parse("foo {0} bar");
-            assertFalse(left.compatible(right));
-        }
-        {
-            var left = FormatExpression.parse("{0}");
-            var right = FormatExpression.parse("{0} {1}");
-            assertFalse(left.compatible(right));
-        }
-        {
-            var left = FormatExpression.parse("{0,date}");
-            var right = FormatExpression.parse("foo {0,dtf_date} bar {0,dtf_time}");
-            assertTrue(left.compatible(right));
-        }
-        {
-            var left = FormatExpression.parse("{0,dtf_date} {2,number} {3}");
-            var right = FormatExpression.parse("{3} {2,number,currency} {0,dtf_date}");
-            assertTrue(left.compatible(right));
-        }
-        {
-            var left = FormatExpression.parse("{1}");
-            var right = FormatExpression.parse("{0}{1}");
-            assertFalse(left.compatible(right));
         }
     }
 

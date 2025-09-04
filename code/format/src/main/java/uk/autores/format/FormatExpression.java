@@ -217,8 +217,17 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         }
         Formatter[] expr = list.toArray(new Formatter[0]);
         int vars = argCount(expr);
-        validateTypes(expr, vars);
-        return new FormatExpression(expr, vars);
+
+        var fe = new FormatExpression(expr, vars);
+        var incompatibilities = FormatVariables.incompatibilities(fe, fe);
+        if (!incompatibilities.isEmpty()) {
+            var joiner = new StringJoiner("; ", "Errors: ", "");
+            for (var i : incompatibilities) {
+                joiner.add(i.toString());
+            }
+            throw new IllegalArgumentException(joiner.toString());
+        }
+        return fe;
     }
 
     private static void rationalize(List<Formatter> expr) {
@@ -444,22 +453,6 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         }
     }
 
-    private static void validateTypes(Formatter[] expr, int vars) {
-        Object[] args = new Object[vars];
-        Arrays.fill(args, Void.class);
-        for (Formatter segment : expr) {
-            if (segment instanceof FormatVariable v) {
-                int index = v.index();
-                if (args[index] == Void.class) {
-                    args[index] = v.type().argType();
-                } else if (args[index] != v.type().argType()) {
-                    String msg = args[index] + " does not match " + v.type().argType() + " at index " + index;
-                    throw new IllegalArgumentException(msg);
-                }
-            }
-        }
-    }
-
     private static int argCount(Formatter[] s) {
         int max = 0;
         for (Formatter segment : s) {
@@ -469,56 +462,5 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             }
         }
         return max;
-    }
-
-    /**
-     * <p>
-     *     Tests if two expressions can consume the same format arguments.
-     *     Used to check if localised strings are compatible.
-     * </p>
-     * <p>
-     *     Expressions are considered compatible if all {@link FormatVariable}s
-     *     have matching {@link FormatVariable#index()} and {@link FormatVariable#type()}'s
-     *     {@link FmtType#argType()} are the same.
-     *     {@link FmtType#NONE} is considered compatible with all other types.
-     * </p>
-     * <p>
-     *     "{0,dtf_date}" and "{0,dtf_time}" are considered compatible
-     *     because "{0,dtf_date} {0,dtf_time}" is a valid expression.
-     * </p>
-     *
-     * @param other another expression
-     * @return true if compatible
-     * @since 17.1.1
-     */
-    public boolean compatible(FormatExpression other) {
-        if (this == other) {
-            return true;
-        }
-        if (this.vars != other.vars) {
-            return false;
-        }
-        return compatible(this, other)
-                && compatible(other, this);
-    }
-
-    private static boolean compatible(FormatExpression e0, FormatExpression e1) {
-        for (int i = 0, len = e0.expr.length; i < len; i++) {
-            var f = e0.expr[i];
-            if (f instanceof FormatVariable fv && mismatch(e1, fv)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean mismatch(FormatExpression fe, FormatVariable other) {
-        for (var f : fe.expr) {
-            if (f instanceof FormatVariable fv
-                    && other.index() == fv.index()) {
-                return other.type().argType() != fv.type().argType();
-            }
-        }
-        return true;
     }
 }
