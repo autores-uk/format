@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.BiPredicate;
 
 import static java.util.Arrays.asList;
 
@@ -25,6 +26,8 @@ import static java.util.Arrays.asList;
  * </ul>
  */
 public final class FormatExpression extends Formatter implements Iterable<Formatter> {
+    private static final BiPredicate<FormatVariable, FormatVariable> DEFAULT_MATCHER = FormatVariable::laxMatch;
+
     private final Formatter[] expr;
     private final int vars;
 
@@ -178,7 +181,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
 
     /**
      * <p>
-     *     Parses a {@link java.text.MessageFormat} expression.
+     *     Parses a {@link java.text.MessageFormat} expression using the laxest type matching.
      * </p>
      * <p>
      *     See the {@link java.text.MessageFormat} type for supported expressions.
@@ -187,8 +190,22 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * @param pattern source text
      * @return parsed expression
      * @throws IllegalArgumentException on malformed expressions
+     * @see FormatVariable#laxMatch(FormatVariable, FormatVariable) 
      */
     public static FormatExpression parse(CharSequence pattern) {
+        return parse(pattern, DEFAULT_MATCHER);
+    }
+
+    /**
+     * As {@link #parse(CharSequence)} with the ability to apply stricter compatibility checks.
+     *
+     * @param pattern source text
+     * @param compatibility compatibility check
+     * @return parsed expression
+     *
+     * @since 17.2.0
+     */
+    public static FormatExpression parse(CharSequence pattern, BiPredicate<FormatVariable, FormatVariable> compatibility) {
         Objects.requireNonNull(pattern, "Pattern cannot be null");
         var list = new ArrayList<Formatter>();
         int offset = 0;
@@ -219,7 +236,10 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         int vars = argCount(expr);
 
         var fe = new FormatExpression(expr, vars);
-        var incompatibilities = FormatVariables.incompatibilities(fe, fe);
+        var incompatibilities = incompatibilities(fe, fe, compatibility);
+        if (incompatibilities.isEmpty() && compatibility != DEFAULT_MATCHER) {
+            incompatibilities = incompatibilities(fe, fe);
+        }
         if (!incompatibilities.isEmpty()) {
             var joiner = new StringJoiner("; ", "Errors: ", "");
             for (var i : incompatibilities) {
@@ -462,5 +482,153 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             }
         }
         return max;
+    }
+
+
+    /**
+     * Lax test for {@link FormatExpression} compatibility.
+     * Equivalent to <code>var results = incompatibilities(reference, candidate, FormatVariables::argTypesMatch);</code>.
+     *
+     * @param reference expression to check against
+     * @param candidate possible source of incompatibilities
+     * @return incompatibilities
+     *
+     * @since 17.2.0
+     */
+    public static Set<Incompatibility> incompatibilities(FormatExpression reference, FormatExpression candidate) {
+        return incompatibilities(reference, candidate, FormatVariable::laxMatch);
+    }
+
+    /**
+     * Tests two {@link FormatExpression}s for variable compatibility.
+     * Intended to verify that two expressions can take the same format arguments.
+     *
+     * @param reference expression to check against
+     * @param candidate possible source of incompatibilities
+     * @param compatible predicate for checking compatibility
+     * @return incompatibilities
+     *
+     * @since 17.2.0
+     */
+    public static Set<Incompatibility> incompatibilities(FormatExpression reference, FormatExpression candidate,
+                                                         BiPredicate<FormatVariable, FormatVariable> compatible) {
+        Set<Incompatibility> results = Set.of();
+        for (var f : candidate) {
+            if (f instanceof FormatVariable v) {
+                results = findMismatches(results, reference, v, compatible);
+            }
+        }
+        for (var f : reference) {
+            if (f instanceof FormatVariable v) {
+                results = findMissing(results, v, candidate);
+            }
+        }
+        return results;
+    }
+
+    private static Set<Incompatibility> findMismatches(Set<Incompatibility> results, FormatExpression ref,
+                                                       FormatVariable candidate,
+                                                       BiPredicate<FormatVariable, FormatVariable> compatible) {
+        boolean found = false;
+        for (var f : ref) {
+            if (f instanceof FormatVariable v && v.index() == candidate.index()) {
+                results = findMismatches(results, v, candidate, compatible);
+                found = true;
+            }
+        }
+        if (!found) {
+            results = mutable(results);
+            results.add(new Incompatibility(candidate.index(), Problem.NONEXISTENT));
+        }
+        return results;
+    }
+
+    private static Set<Incompatibility> findMismatches(Set<Incompatibility> results, FormatVariable ref,
+                                                       FormatVariable candidate,
+                                                       BiPredicate<FormatVariable, FormatVariable> compatible) {
+        if (!compatible.test(ref, candidate)) {
+            results = mutable(results);
+            results.add(new Incompatibility(ref.index(), Problem.MISMATCH));
+        }
+        return results;
+    }
+
+    private static Set<Incompatibility> findMissing(Set<Incompatibility> results, FormatVariable ref,
+                                                    FormatExpression candidate) {
+        for (var f : candidate) {
+            if (f instanceof FormatVariable v && v.index() == ref.index()) {
+                return results;
+            }
+        }
+        results = mutable(results);
+        results.add(new Incompatibility(ref.index(), Problem.MISSING));
+        return results;
+    }
+
+    private static <E> Set<E> mutable(Set<E> set) {
+        return set.isEmpty()
+                ? new HashSet<>()
+                : set;
+    }
+
+    /**
+     * The nature of the incompatibility.
+     *
+     * @since 17.2.0
+     */
+    public enum Problem {
+        /** Variables types failed to match */
+        MISMATCH,
+        /** Variable in the reference missing from candidate */
+        MISSING,
+        /** Variable in candidate does not exist in reference */
+        NONEXISTENT,
+    }
+
+    /**
+     * Incompatibilities between {@link FormatExpression}s.
+     *
+     * @since 17.2.0
+     */
+    public static final class Incompatibility {
+        private final int index;
+        private final Problem problem;
+
+        Incompatibility(int index, Problem problem) {
+            this.index = index;
+            this.problem = problem;
+        }
+
+        /**
+         * Associated variable index.
+         *
+         * @return variable index
+         */
+        public int index() {
+            return index;
+        }
+
+        /**
+         * Nature of the problem.
+         *
+         * @return nature
+         */
+        public Problem problem() {
+            return problem;
+        }
+
+        /**
+         * Informational.
+         *
+         * @return human readable text
+         */
+        @Override
+        public String toString() {
+            return switch (problem) {
+                case MISMATCH -> "variable {" + index + "} has compatibility issues";
+                case MISSING -> "variable {" + index + "} missing";
+                case NONEXISTENT -> "variable {" + index + "} does not exist";
+            };
+        }
     }
 }

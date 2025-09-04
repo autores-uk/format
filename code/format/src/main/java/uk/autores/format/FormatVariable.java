@@ -99,4 +99,46 @@ public final class FormatVariable extends Formatter {
     public String toString() {
         return raw;
     }
+
+    /**
+     * Lax test for compatibility.
+     * Variables are considered compatible if their {@link FmtType#argType()}s
+     * are the same or one is {@link Object}.
+     *
+     * @param reference variable to check against
+     * @param candidate possible source of incompatibilities
+     * @return true if compatible
+     *
+     * @since 17.2.0
+     */
+    public static boolean laxMatch(FormatVariable reference, FormatVariable candidate) {
+        if (reference.index != candidate.index()) {
+            throw new IllegalArgumentException("Index mismatch: " + reference + " != " + candidate);
+        }
+        Class<?> r = reference.type().argType();
+        if (r == Object.class) {
+            return true;
+        }
+        Class<?> c = candidate.type().argType();
+        return c == Object.class
+                || c == r;
+    }
+
+    /**
+     * Strict test for compatibility.
+     * Variables are considered compatible only if their {@link FormatVariable#type()}s
+     * are the same.
+     *
+     * @param reference variable to check against
+     * @param candidate possible source of incompatibilities
+     * @return true if compatible
+     *
+     * @since 17.2.0
+     */
+    public static boolean strictMatch(FormatVariable reference, FormatVariable candidate) {
+        if (reference.index != candidate.index()) {
+            throw new IllegalArgumentException("Index mismatch: " + reference + " != " + candidate);
+        }
+        return reference.type() == candidate.type();
+    }
 }

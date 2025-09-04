@@ -302,4 +302,88 @@ class FormatExpressionTest {
             buf.delete(0, buf.length());
         }
     }
+
+    @Test
+    void argTypesMatch() {
+        {
+            var left = FormatExpression.parse("{0}");
+            var right = FormatExpression.parse("{0}{0}{0}{0}{0}{0}{0}{0}{0}");
+            var actual = FormatExpression.incompatibilities(left, right);
+            assertTrue(actual.isEmpty());
+        }
+        {
+            var left = FormatExpression.parse("{0}");
+            var right = FormatExpression.parse("{0,number}");
+            var actual = FormatExpression.incompatibilities(left, right);
+            assertTrue(actual.isEmpty());
+        }
+        {
+            var left = FormatExpression.parse("{0} {1}");
+            var right = FormatExpression.parse("{0}");
+            var actual = FormatExpression.incompatibilities(left, right);
+            assertEquals(1, actual.size());
+            assertEquals(1, actual.iterator().next().index());
+            assertEquals(FormatExpression.Problem.MISSING, actual.iterator().next().problem());
+            assertNotNull(actual.toString());
+        }
+        {
+            var left = FormatExpression.parse("{0}");
+            var right = FormatExpression.parse("{1}");
+            var actual = FormatExpression.incompatibilities(left, right);
+            assertEquals(2, actual.size());
+        }
+        {
+            var left = FormatExpression.parse("{0}");
+            var right = FormatExpression.parse("{0} {1} {3}");
+            var actual = FormatExpression.incompatibilities(left, right);
+            assertEquals(2, actual.size());
+            assertEquals(FormatExpression.Problem.NONEXISTENT, actual.iterator().next().problem());
+            assertNotNull(actual.toString());
+        }
+        {
+            var left = FormatExpression.parse("{0,number}");
+            var right = FormatExpression.parse("{0,date}");
+            var actual = FormatExpression.incompatibilities(left, right);
+            assertEquals(1, actual.size());
+            assertEquals(0, actual.iterator().next().index());
+            assertEquals(FormatExpression.Problem.MISMATCH, actual.iterator().next().problem());
+            assertNotNull(actual.toString());
+        }
+        {
+            var left = FormatExpression.parse("{0}");
+            var right = FormatExpression.parse("{1}");
+            var actual = FormatExpression.incompatibilities(left, right);
+            assertEquals(2, actual.size());
+        }
+    }
+
+    @Test
+    void typesMatch() {
+        {
+            var left = FormatExpression.parse("foo {0,number}");
+            var right = FormatExpression.parse("{0,number} foo");
+            var actual = FormatExpression.incompatibilities(left, right, FormatVariable::strictMatch);
+            assertTrue(actual.isEmpty());
+        }
+        {
+            var left = FormatExpression.parse("{0}");
+            var right = FormatExpression.parse("{0,number}");
+            var actual = FormatExpression.incompatibilities(left, right, FormatVariable::strictMatch);
+            assertEquals(1, actual.size());
+            assertEquals(0, actual.iterator().next().index());
+            assertEquals(FormatExpression.Problem.MISMATCH, actual.iterator().next().problem());
+        }
+        {
+            assertThrowsExactly(IllegalArgumentException.class, () -> {
+                FormatExpression.parse("{0} {0,number}", FormatVariable::strictMatch);
+            });
+        }
+    }
+
+    @Test
+    void brokenMatcher() {
+        assertThrowsExactly(IllegalArgumentException.class, () -> {
+            FormatExpression.parse("{0,date} {0,number}", (a, b) -> true);
+        });
+    }
 }
