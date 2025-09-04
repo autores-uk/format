@@ -122,6 +122,9 @@ public final class FormatVariables {
                 : set;
     }
 
+    /**
+     * The nature of the incompatibility.
+     */
     public enum Problem {
         /** Variables types failed to match */
         MISMATCH,
@@ -143,10 +146,20 @@ public final class FormatVariables {
             this.problem = problem;
         }
 
+        /**
+         * Associated variable index.
+         *
+         * @return variable index
+         */
         public int index() {
             return index;
         }
 
+        /**
+         * Nature of the problem.
+         *
+         * @return nature
+         */
         public Problem problem() {
             return problem;
         }
