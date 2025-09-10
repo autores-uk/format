@@ -41,14 +41,14 @@ public enum FmtType {
      *     Example: <code>{0,date}</code>
      * </p>
      */
-    DATE(Temporals::date, "date", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
+    DATE(Dates::date, "date", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
     /**
      * Maps to {@link java.time.format.DateTimeFormatter}
      * <p>
      *     Example: <code>{0,time}</code>
      * </p>
      */
-    TIME(Temporals::time, "time", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
+    TIME(Dates::time, "time", TemporalAccessor.class, FmtStyle.NONE, FmtStyle.SHORT, FmtStyle.MEDIUM, FmtStyle.LONG, FmtStyle.FULL, FmtStyle.SUBFORMAT),
     /**
      * Maps to {@link java.text.ChoiceFormat}
      * <p>

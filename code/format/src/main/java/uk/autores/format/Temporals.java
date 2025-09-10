@@ -2,12 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 package uk.autores.format;
 
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.time.temporal.TemporalAccessor;
-import java.util.Date;
 import java.util.Locale;
 import java.util.function.Function;
 
@@ -15,15 +12,13 @@ final class Temporals {
     private Temporals() {}
 
     static void date(Locale l, FormatVariable v, StringBuffer buf, Object... args) {
-        Object[] a = handleLegacy(v, args);
         DateTimeFormatter dtf = formatter(DateTimeFormatter::ofLocalizedDate, l, v);
-        format(dtf, v, buf, a);
+        format(dtf, v, buf, args);
     }
 
     static void time(Locale l, FormatVariable v, StringBuffer buf, Object... args) {
-        Object[] a = handleLegacy(v, args);
         DateTimeFormatter dtf = formatter(DateTimeFormatter::ofLocalizedTime, l, v);
-        format(dtf, v, buf, a);
+        format(dtf, v, buf, args);
     }
 
     static void datetime(Locale l, FormatVariable v, StringBuffer buf, Object... args) {
@@ -118,21 +113,5 @@ final class Temporals {
             case FULL -> FormatStyle.FULL;
             default -> FormatStyle.MEDIUM;
         };
-    }
-
-    private static Object[] handleLegacy(FormatVariable v, Object... args) {
-        Object[] result = args;
-        FmtType type = v.type();
-        if (type == FmtType.DATE || type == FmtType.TIME || type == FmtType.NONE) {
-            Object value = args[v.index()];
-            if (value instanceof Date d) {
-                var zid = ZoneId.systemDefault();
-                var ldt = ZonedDateTime.ofInstant(d.toInstant(), zid);
-
-                result = args.clone();
-                result[v.index()] = ldt;
-            }
-        }
-        return result;
     }
 }
