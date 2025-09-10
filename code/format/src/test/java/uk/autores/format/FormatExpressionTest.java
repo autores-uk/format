@@ -261,26 +261,6 @@ class FormatExpressionTest {
     }
 
     @Test
-    void needsLocale() {
-        Map<String, Boolean> tests = new LinkedHashMap<>();
-        tests.put("", false);
-        tests.put("foo 'bar'", false);
-        tests.put("{0}{0}{0}{0}", false);
-        tests.put("{0}{0}{0}{1,number}", true);
-        tests.put("{0}{0}{0}{1,date}{1,time}", true);
-
-        for (Map.Entry<String, Boolean> t : tests.entrySet()) {
-            boolean expected = t.getValue();
-            String test = t.getKey();
-            FormatExpression expression = FormatExpression.parse(test);
-
-            boolean actual = expression.needsLocale();
-
-            assertEquals(expected, actual);
-        }
-    }
-
-    @Test
     void rawNumbers() {
         assertSame(Integer.MAX_VALUE);
     }

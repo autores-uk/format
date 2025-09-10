@@ -2,12 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 package uk.autores.format;
 
-import java.text.ChoiceFormat;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
+import java.text.*;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.BiPredicate;
@@ -16,7 +12,7 @@ import static java.util.Arrays.asList;
 
 /**
  * <p>
- *     Type that approximates the behaviour of {@link java.text.MessageFormat}.
+ *     Type that approximates the behaviour of {@link MessageFormat}.
  * </p>
  * Features:
  * <ul>
@@ -40,13 +36,30 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * <p>
      *     Formats the expression.
      *     The argument array is expected to be at least {@link #argCount()} in length
-     *     with instances supported by the underlying {@link java.text.Format} types.
+     *     with instances supported by the underlying {@link Format} types.
      * </p>
      * <p>
      *     Generally the expected types are defined by {@link FmtType#argType()}.
-     *     {@link Date} instances will be converted to {@link ZonedDateTime} for date/time formatting
-     *     using {@link ZoneId#systemDefault()}.
      *     {@link Object[]} arrays can be used for {@link FmtType#LIST}.
+     * </p>
+     * <h4>Dates &amp; Times</h4>
+     * <p>
+     *     Date formatting is deliberately incompatible with {@link MessageFormat}.
+     *     {@link DateTimeFormatter} is always used to format dates.
+     *     The strings produced by this type sometimes vary from those produced by
+     *     {@link DateFormat} used by {@link MessageFormat}
+     *     for "date" and "time" variables.
+     *     Prefer "dtf_date" and "dtf_time" variables for consistency.
+     * </p>
+     * <p>
+     *     {@link Date} instances used as arguments will be converted
+     *     to {@link java.time.ZonedDateTime} instances using {@link ZoneId#systemDefault()}
+     *     prior to formatting.
+     * </p>
+     * <h4>Lists</h4>
+     * <p>
+     *     Variables of type "list" require a JDK22+ runtime.
+     *     {@link Object} arrays may be used as arguments.
      * </p>
      *
      * @param l    the locale
@@ -155,22 +168,6 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         return x * 2;
     }
 
-    /**
-     * Tests an expression to determine if a {@link Locale} is required to format an expression.
-     * True if any {@link Formatter} is a {@link FormatVariable} AND
-     * any {@link FormatVariable#type()} is NOT {@link FmtType#NONE}.
-     *
-     * @return true if a locale is required
-     */
-    public boolean needsLocale() {
-        for (Formatter segment : expr) {
-            if (segment instanceof FormatVariable fv && fv.type() != FmtType.NONE) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     int size() {
         return expr.length;
     }
@@ -181,10 +178,10 @@ public final class FormatExpression extends Formatter implements Iterable<Format
 
     /**
      * <p>
-     *     Parses a {@link java.text.MessageFormat} expression using the laxest type matching.
+     *     Parses a {@link MessageFormat} expression using the laxest type matching.
      * </p>
      * <p>
-     *     See the {@link java.text.MessageFormat} type for supported expressions.
+     *     See the {@link MessageFormat} type for supported expressions.
      * </p>
      *
      * @param pattern source text
@@ -197,7 +194,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     }
 
     /**
-     * As {@link #parse(CharSequence)} with the ability to apply stricter compatibility checks.
+     * As {@link #parse(CharSequence)} with the ability to apply stricter variable compatibility checks.
      *
      * @param pattern source text
      * @param compatibility compatibility check
@@ -456,13 +453,11 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             case NUMBER:
                 new DecimalFormat(pattern, DecimalFormatSymbols.getInstance(l));
                 break;
-            case DATE:
-            case TIME:
-                new SimpleDateFormat(pattern, l);
-                break;
             case CHOICE:
                 new ChoiceFormat(pattern);
                 break;
+            case DATE:
+            case TIME:
             case DTF_DATE:
             case DTF_TIME:
             case DTF_DATETIME:
