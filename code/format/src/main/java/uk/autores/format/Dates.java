@@ -19,7 +19,7 @@ final class Dates {
     private static Object[] handleLegacy(FormatVariable v, Object... args) {
         Object[] result = args;
         FmtType type = v.type();
-        if (type == FmtType.DATE || type == FmtType.TIME || type == FmtType.NONE) {
+        if (type == FmtType.DATE || type == FmtType.TIME) {
             Object value = args[v.index()];
             if (value instanceof Date d) {
                 var zid = ZoneId.systemDefault();

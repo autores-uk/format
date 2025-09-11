@@ -366,4 +366,24 @@ class FormatExpressionTest {
             FormatExpression.parse("{0,date} {0,number}", (a, b) -> true);
         });
     }
+
+    @Test
+    void npes() {
+        var en = Locale.ENGLISH;
+        Object[] nullArg = {null};
+        {
+            var expr = FormatExpression.parse("{0}");
+            assertThrowsExactly(NullPointerException.class, () -> expr.formatTo(en, new StringBuffer(), (Object[]) null));
+            assertThrowsExactly(NullPointerException.class, () -> expr.formatTo(null, new StringBuffer(), 1));
+            assertThrowsExactly(NullPointerException.class, () -> expr.formatTo(en, null, 1));
+        }
+        {
+            var expr = FormatExpression.parse("{0,number}");
+            assertThrowsExactly(NullPointerException.class, () -> expr.formatTo(en, new StringBuffer(), nullArg));
+        }
+        {
+            var expr = FormatExpression.parse("{0,dtf_date}");
+            assertThrowsExactly(NullPointerException.class, () -> expr.formatTo(en, new StringBuffer(), nullArg));
+        }
+    }
 }

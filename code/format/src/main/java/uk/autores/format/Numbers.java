@@ -23,6 +23,7 @@ final class Numbers {
         };
 
         Object value = args[variable.index()];
+        variable.requireNonNull(value);
         nf.format(value, buf, new FieldPosition(0));
     }
 }

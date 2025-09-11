@@ -23,6 +23,7 @@ final class Lists {
         Object type = style(ListFormat, variable.style());
         Object formatter = Reflect.invoke(null, ListFormat.getInstance, l, type, ListFormat.FULL);
         Object list = args[variable.index()];
+        variable.requireNonNull(list);
         Reflect.invoke(formatter, ListFormat.format, list, buf, new FieldPosition(0));
     }
 

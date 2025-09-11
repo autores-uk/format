@@ -141,4 +141,11 @@ public final class FormatVariable extends Formatter {
         }
         return reference.type() == candidate.type();
     }
+
+    void requireNonNull(Object arg) {
+        if (arg == null) {
+            var msg = "Argument " + this.raw + " cannot be null";
+            throw new NullPointerException(msg);
+        }
+    }
 }

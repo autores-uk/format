@@ -10,6 +10,8 @@ final class Choices {
 
     static void format(Locale l, FormatVariable variable, StringBuffer buf, Object... args) {
         Object value = args[variable.index()];
+        variable.requireNonNull(value);
+
         ChoiceFormat format = new ChoiceFormat(variable.subformat());
         String choice = format.format(value);
         if (choice.indexOf('{') >= 0) {

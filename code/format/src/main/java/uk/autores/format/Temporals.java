@@ -88,6 +88,7 @@ final class Temporals {
 
     private static void format(DateTimeFormatter f, FormatVariable variable, StringBuffer buf, Object... args) {
         var arg = args[variable.index()];
+        variable.requireNonNull(arg);
         if (arg instanceof TemporalAccessor t) {
             f.formatTo(t, buf);
         } else {

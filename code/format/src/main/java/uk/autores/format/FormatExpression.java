@@ -9,6 +9,7 @@ import java.util.*;
 import java.util.function.BiPredicate;
 
 import static java.util.Arrays.asList;
+import static java.util.Objects.requireNonNull;
 
 /**
  * <p>
@@ -68,6 +69,10 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      */
     @Override
     public void formatTo(Locale l, StringBuffer buf, Object... args) {
+        requireNonNull(l, "Locale cannot be null");
+        requireNonNull(buf, "StringBuffer cannot be null");
+        requireNonNull(args, "Object array cannot be null");
+
         for (Formatter f : expr) {
             f.formatTo(l, buf, args);
         }
@@ -203,7 +208,9 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * @since 17.2.0
      */
     public static FormatExpression parse(CharSequence pattern, BiPredicate<FormatVariable, FormatVariable> compatibility) {
-        Objects.requireNonNull(pattern, "Pattern cannot be null");
+        requireNonNull(pattern, "CharSequence pattern cannot be null");
+        requireNonNull(compatibility, "BiPredicate cannot be null");
+
         var list = new ArrayList<Formatter>();
         int offset = 0;
         for (int i = 0; i < pattern.length(); i++) {
