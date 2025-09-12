@@ -578,7 +578,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * @since 17.2.0
      */
     public enum Problem {
-        /** Variables types failed to match */
+        /** Variable types failed to match */
         MISMATCH,
         /** Variable in the reference missing from candidate */
         MISSING,
