@@ -486,7 +486,6 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         return max;
     }
 
-
     /**
      * Lax test for {@link FormatExpression} compatibility.
      * Equivalent to <code>var results = incompatibilities(reference, candidate, FormatVariables::argTypesMatch);</code>.
