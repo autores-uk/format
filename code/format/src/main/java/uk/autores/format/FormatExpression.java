@@ -186,7 +186,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      *     Parses a {@link MessageFormat} expression using the laxest type matching.
      * </p>
      * <p>
-     *     See the {@link MessageFormat} type for supported expressions.
+     *     See the {@link MessageFormat} type for supported patterns.
      * </p>
      *
      * @param pattern source text
