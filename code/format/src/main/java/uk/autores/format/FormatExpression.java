@@ -241,9 +241,9 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         int vars = argCount(expr);
 
         var fe = new FormatExpression(expr, vars);
-        var incompatibilities = incompatibilities(fe, fe, compatibility);
+        var incompatibilities = fe.incompatibilities(fe, compatibility);
         if (incompatibilities.isEmpty() && compatibility != DEFAULT_MATCHER) {
-            incompatibilities = incompatibilities(fe, fe);
+            incompatibilities = fe.incompatibilities(fe);
         }
         if (!incompatibilities.isEmpty()) {
             var joiner = new StringJoiner("; ", "Errors: ", "");
@@ -513,40 +513,37 @@ public final class FormatExpression extends Formatter implements Iterable<Format
 
     /**
      * Lax test for {@link FormatExpression} compatibility.
-     * Equivalent to <code>var results = incompatibilities(reference, candidate, FormatVariables::argTypesMatch);</code>.
+     * Equivalent to <code>var results = reference.incompatibilities(candidate, FormatVariable::laxMatch);</code>.
      *
-     * @param reference expression to check against
-     * @param candidate possible source of incompatibilities
+     * @param translation possible source of incompatibilities
      * @return incompatibilities
      *
-     * @since 17.2.0
+     * @since 17.3.0
      */
-    public static Set<Incompatibility> incompatibilities(FormatExpression reference, FormatExpression candidate) {
-        return incompatibilities(reference, candidate, FormatVariable::laxMatch);
+    public Set<Incompatibility> incompatibilities(FormatExpression translation) {
+        return incompatibilities(translation, FormatVariable::laxMatch);
     }
 
     /**
      * Tests two {@link FormatExpression}s for variable compatibility.
      * Intended to verify that two expressions can take the same format arguments.
      *
-     * @param reference expression to check against
-     * @param candidate possible source of incompatibilities
+     * @param translation possible source of incompatibilities
      * @param compatible predicate for checking compatibility
      * @return incompatibilities
      *
-     * @since 17.2.0
+     * @since 17.3.0
      */
-    public static Set<Incompatibility> incompatibilities(FormatExpression reference, FormatExpression candidate,
-                                                         BiPredicate<FormatVariable, FormatVariable> compatible) {
+    public Set<Incompatibility> incompatibilities(FormatExpression translation, BiPredicate<FormatVariable, FormatVariable> compatible) {
         Set<Incompatibility> results = Set.of();
-        for (var f : candidate) {
+        for (var f : translation) {
             if (f instanceof FormatVariable v) {
-                results = findMismatches(results, reference, v, compatible);
+                results = findMismatches(results, this, v, compatible);
             }
         }
-        for (var f : reference) {
+        for (var f : this) {
             if (f instanceof FormatVariable v) {
-                results = findMissing(results, v, candidate);
+                results = findMissing(results, v, translation);
             }
         }
         return results;
