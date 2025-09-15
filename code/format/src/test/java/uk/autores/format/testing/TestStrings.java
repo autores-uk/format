@@ -47,6 +47,8 @@ public final class TestStrings {
                 "{0,date}{0,time}",
                 "At {1,time} on {1,date}, there was {2} on planet {0,number,integer}.",
                 "{0}{0}{0}",
+                "{0}=={0,number}",
+                "{0,number}=={0}",
                 // JDK23 expressions
                 "{0,dtf_date,yy}",
                 "{0,dtf_time,hh}",
@@ -60,7 +62,7 @@ public final class TestStrings {
             }
             expressions.addAll(construct(type));
         }
-        return expressions.toArray(new String[]{});
+        return expressions.toArray(new String[0]);
     }
 
     private static List<String> construct(FmtType type) {

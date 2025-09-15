@@ -236,6 +236,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             addRaw(list, pattern, offset, pattern.length());
             rationalize(list);
         }
+
         Formatter[] expr = list.toArray(new Formatter[0]);
         int vars = argCount(expr);
 
@@ -251,6 +252,8 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             }
             throw new IllegalArgumentException(joiner.toString());
         }
+
+        fix(expr);
         return fe;
     }
 
@@ -268,6 +271,28 @@ public final class FormatExpression extends Formatter implements Iterable<Format
                         head.processed() + tail.processed()
                 );
                 expr.add(combined);
+            }
+        }
+    }
+
+    private static void fix(Formatter[] expr) {
+        for (int i = 0, len = expr.length; i < len; i++) {
+            var f = expr[i];
+            if (f instanceof FormatVariable v) {
+                fix(expr, i, v);
+            }
+        }
+    }
+
+    private static void fix(Formatter[] expr, int n, FormatVariable v) {
+        for (int i = 0, len = expr.length; i < len; i++) {
+            var f = expr[i];
+            if (f instanceof FormatVariable v1) {
+                if (v.equals(v1)) {
+                    expr[n] = v1;
+                } else if (v.index() == v1.index() && v.type() == FmtType.NONE) {
+                    expr[n] = FormatVariable.from(v.toString(), v.index(), v1.type(), FmtStyle.NONE, "");
+                }
             }
         }
     }
