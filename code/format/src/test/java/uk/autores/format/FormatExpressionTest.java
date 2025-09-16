@@ -14,6 +14,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -380,6 +381,29 @@ class FormatExpressionTest {
         {
             var expr = FormatExpression.parse("{0,dtf_date}");
             assertThrowsExactly(NullPointerException.class, () -> expr.formatTo(en, new StringBuffer(), nullArg));
+        }
+    }
+
+    @Test
+    void narrowing() {
+        var epoch = ZonedDateTime.ofInstant(Instant.EPOCH, ZoneId.of("UTC"));
+        {
+            var expr = FormatExpression.parse("{0}{0,dtf_date}");
+            Class<?>[] argTypes = expr.argTypes();
+            Object[] args = expr.argExamples();
+            assertEquals(1, argTypes.length);
+            assertEquals(1, args.length);
+            assertEquals(TemporalAccessor.class, argTypes[0]);
+            assertEquals(epoch, args[0]);
+        }
+        {
+            var expr = FormatExpression.parse("{0,dtf_date}{0}");
+            Class<?>[] argTypes = expr.argTypes();
+            Object[] args = expr.argExamples();
+            assertEquals(1, argTypes.length);
+            assertEquals(1, args.length);
+            assertEquals(TemporalAccessor.class, argTypes[0]);
+            assertEquals(epoch, args[0]);
         }
     }
 }

@@ -125,10 +125,24 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         Arrays.fill(results, Void.class);
         for (Formatter segment : expr) {
             if (segment instanceof FormatVariable v) {
-                results[v.index()] = v.type().argType();
+                results[v.index()] = (v.type() == FmtType.NONE)
+                        ? narrowType(v)
+                        : v.type().argType();
             }
         }
         return results;
+    }
+
+    private Class<?> narrowType(FormatVariable current) {
+        for (var segment : expr) {
+            if (segment != current
+                    && segment instanceof FormatVariable v
+                    && v.index() == current.index()
+                    && v.type() != FmtType.NONE) {
+                return v.type().argType();
+            }
+        }
+        return Object.class;
     }
 
     /**
@@ -142,9 +156,23 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         for (Formatter f: expr) {
             if (f instanceof FormatVariable variable) {
                 Examples.set(args, variable);
+                if (variable.type() == FmtType.NONE) {
+                    narrowInstance(args, variable);
+                }
             }
         }
         return args;
+    }
+
+    private void narrowInstance(Object[] args, FormatVariable current) {
+        for (var segment : expr) {
+            if (segment != current
+                    && segment instanceof FormatVariable v
+                    && v.index() == current.index()
+                    && v.type() != FmtType.NONE) {
+                Examples.set(args, v);
+            }
+        }
     }
 
     /**
@@ -253,7 +281,6 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             throw new IllegalArgumentException(joiner.toString());
         }
 
-        fix(expr);
         return fe;
     }
 
@@ -271,28 +298,6 @@ public final class FormatExpression extends Formatter implements Iterable<Format
                         head.processed() + tail.processed()
                 );
                 expr.add(combined);
-            }
-        }
-    }
-
-    private static void fix(Formatter[] expr) {
-        for (int i = 0, len = expr.length; i < len; i++) {
-            var f = expr[i];
-            if (f instanceof FormatVariable v) {
-                fix(expr, i, v);
-            }
-        }
-    }
-
-    private static void fix(Formatter[] expr, int n, FormatVariable v) {
-        for (int i = 0, len = expr.length; i < len; i++) {
-            var f = expr[i];
-            if (f instanceof FormatVariable v1) {
-                if (v.equals(v1)) {
-                    expr[n] = v1;
-                } else if (v.index() == v1.index() && v.type() == FmtType.NONE) {
-                    expr[n] = FormatVariable.from(v.toString(), v.index(), v1.type(), FmtStyle.NONE, "");
-                }
             }
         }
     }
