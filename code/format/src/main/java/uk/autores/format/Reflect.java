@@ -29,11 +29,9 @@ final class Reflect {
     }
 
     private static RuntimeException r(Exception e) {
-        Throwable cause = e.getCause();
-        if (cause instanceof RuntimeException) {
-            return (RuntimeException) cause;
-        }
-        return new InvocationException(e);
+        return e.getCause() instanceof RuntimeException cause
+                ? cause
+                : new InvocationException(e);
     }
 
     private static <R> R load(L<R> loader, String msg) {

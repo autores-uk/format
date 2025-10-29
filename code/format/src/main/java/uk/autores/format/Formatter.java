@@ -35,10 +35,8 @@ public sealed abstract class Formatter permits FormatVariable, FormatExpression,
 
     @Override
     public final boolean equals(Object obj) {
-        if (obj instanceof Formatter other) {
-            return toString().equals(other.toString());
-        }
-        return false;
+        return obj instanceof Formatter other
+                && toString().equals(other.toString());
     }
 
     @Override
