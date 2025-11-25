@@ -5,7 +5,7 @@
 # AutoRes Format
 
 A better
-[java.text.MessageFormat](https://docs.oracle.com/en/java/javase/23/docs/api/java.base/java/text/MessageFormat.html).
+[java.text.MessageFormat](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/text/MessageFormat.html).
 
 ```java
 // parse to immutable, thread-safe formatter
