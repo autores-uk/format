@@ -37,7 +37,7 @@
         <central.publishing.maven.plugin>0.10.0</central.publishing.maven.plugin>
 
         <javadoc.bottom><![CDATA[
-                        Copyright 2024-2025
+                        Copyright 2024-2026
                         <br>
                         <a target="_blank" href="https://github.com/autores-uk/format/blob/main/LICENSE.txt">https://github.com/autores-uk/format/blob/main/LICENSE.txt</a>
                         <script>
