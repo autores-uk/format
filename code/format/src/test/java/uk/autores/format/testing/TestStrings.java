@@ -49,10 +49,10 @@ public final class TestStrings {
                 "{0}{0}{0}",
                 "{0}=={0,number}",
                 "{0,number}=={0}",
-                // JDK23 expressions
                 "{0,dtf_date,yy}",
                 "{0,dtf_time,hh}",
                 "{0,dtf_datetime,yy}",
+                "The event will occur on {0,dtf_date} at {0,dtf_time}. ({0})",
         };
 
         List<String> expressions = new ArrayList<>(Arrays.asList(exprs));

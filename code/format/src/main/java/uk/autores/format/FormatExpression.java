@@ -227,12 +227,23 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     }
 
     /**
-     * As {@link #parse(CharSequence)} with the ability to apply stricter variable compatibility checks.
+     * <p>
+     *     As {@link #parse(CharSequence)} with the ability to apply stricter variable compatibility checks.
+     * </p>
+     * <code>"The event will occur on {0,dtf_date} at {0,dtf_time}. ({0})"</code>
+     * <p>
+     *     Variables can be used more than once in an expression.
+     *     The default parser is fairly lax in allowing arguments to be used
+     *     by different variable types where this will plausibly work at runtime.
+     *     There are cases where runtime errors can occur, like using the wrong
+     *     {@link java.time.temporal.TemporalAccessor} type.
+     * </p>
      *
      * @param pattern source text
      * @param compatibility compatibility check
      * @return parsed expression
      * @throws IllegalArgumentException on malformed expressions
+     * @see FormatVariable#strictMatch(FormatVariable, FormatVariable)
      *
      * @since 17.2.0
      */
