@@ -232,6 +232,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * @param pattern source text
      * @param compatibility compatibility check
      * @return parsed expression
+     * @throws IllegalArgumentException on malformed expressions
      *
      * @since 17.2.0
      */
