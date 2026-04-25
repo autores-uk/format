@@ -406,4 +406,18 @@ class FormatExpressionTest {
             assertEquals(epoch, args[0]);
         }
     }
+
+    @Test
+    void caseHandling() {
+        String[] tests = {
+          "{0,NUMBER}", "{0,NUMBER,COMPACT_LONG}",
+        };
+
+        for (var t : tests) {
+            Object[] args = {10_000_000_000L};
+            var expected = new MessageFormat(t, Locale.ENGLISH).format(args);
+            var actual = FormatExpression.parse(t).format(Locale.ENGLISH, args);
+            assertEquals(expected, actual);
+        }
+    }
 }

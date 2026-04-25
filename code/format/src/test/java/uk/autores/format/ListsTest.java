@@ -14,12 +14,17 @@ class ListsTest {
 
     @Test
     void list() {
-        check("{0,list}", new Object[]{Arrays.asList(1, 2, 3)});
+        check("{0,list,unit}", new Object[]{Arrays.asList(1, 2, 3)});
     }
 
     @Test
     void arrays() {
-        check("{0,list}", new Object[]{new Integer[]{1, 2, 3}});
+        check("{0,list,or}", new Object[]{new Integer[]{1, 2, 3}});
+    }
+
+    @Test
+    void upper() {
+        check("{0,LIST,OR}", new Object[]{new Integer[]{1, 2, 3}});
     }
 
     private void check(String pattern, Object[] args) {

@@ -266,7 +266,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             rationalize(list);
         }
 
-        Formatter[] expr = list.toArray(new Formatter[list.size()]);
+        var expr = list.toArray(new Formatter[0]);
         int vars = argCount(expr);
 
         var fe = new FormatExpression(expr, vars);
@@ -455,7 +455,11 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             return false;
         }
         for (int i = 0; i < expected.length(); i++) {
-            if (source.charAt(i + offset) != expected.charAt(i)) {
+            var c = source.charAt(i + offset);
+            c = Character.toLowerCase(c);
+            var e = expected.charAt(i);
+            e = Character.toLowerCase(e);
+            if (c != e) {
                 return false;
             }
         }
