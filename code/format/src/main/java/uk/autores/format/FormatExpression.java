@@ -242,7 +242,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
 
         var list = new ArrayList<Formatter>();
         int offset = 0;
-        for (int i = 0; i < pattern.length(); i++) {
+        for (int i = 0, len = pattern.length(); i < len; i++) {
             char ch = pattern.charAt(i);
             if (ch == '\'') {
                 addRaw(list, pattern, offset, i);
@@ -266,7 +266,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             rationalize(list);
         }
 
-        Formatter[] expr = list.toArray(new Formatter[0]);
+        Formatter[] expr = list.toArray(new Formatter[list.size()]);
         int vars = argCount(expr);
 
         var fe = new FormatExpression(expr, vars);
