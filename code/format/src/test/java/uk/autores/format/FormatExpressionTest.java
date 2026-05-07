@@ -18,6 +18,7 @@ import java.time.temporal.TemporalAccessor;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -282,6 +283,15 @@ class FormatExpressionTest {
             assertEquals(expected, actual);
             buf.delete(0, buf.length());
         }
+    }
+
+    @Test
+    void testDupesDropped() {
+        var str = " {0} {0} {0} {0} {0} {0} {0} {0} {0} ";
+        var expr = FormatExpression.parse(str);
+        var constituents = StreamSupport.stream(expr.spliterator(), false)
+                .collect(Collectors.toSet());
+        assertEquals(2, constituents.size(), constituents.toString());
     }
 
     @Test

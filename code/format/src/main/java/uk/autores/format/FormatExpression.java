@@ -78,6 +78,11 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         }
     }
 
+    /**
+     * Expression as passed to {@link #parse(CharSequence)}.
+     *
+     * @return reconstructed expression
+     */
     @Override
     public String toString() {
         return Chars.concat(expr);
@@ -259,12 +264,12 @@ public final class FormatExpression extends Formatter implements Iterable<Format
                 addRaw(list, pattern, offset, i);
                 FormatLiteral segment = parseEscaped(pattern, i);
                 list.add(segment);
-                rationalize(list);
+                concatAdjacentLiterals(list);
                 i += segment.toString().length();
                 offset = i;
             } else if (ch == '{') {
                 addRaw(list, pattern, offset, i);
-                rationalize(list);
+                concatAdjacentLiterals(list);
                 FormatVariable segment = parseVariable(pattern, i);
                 list.add(segment);
                 i += segment.toString().length();
@@ -274,8 +279,10 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         }
         if (offset < pattern.length()) {
             addRaw(list, pattern, offset, pattern.length());
-            rationalize(list);
+            concatAdjacentLiterals(list);
         }
+
+        dropDupes(list);
 
         var expr = list.toArray(new Formatter[0]);
         int vars = argCount(expr);
@@ -296,7 +303,23 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         return fe;
     }
 
-    private static void rationalize(List<Formatter> expr) {
+    private static void dropDupes(List<Formatter> expr) {
+        int size = expr.size();
+        if (size <= 1) {
+            return;
+        }
+        for (int i = 0; i < size; i++) {
+            var canonical = expr.get(i);
+            for (int j = i + 1; j < size; j++) {
+                var candidate = expr.get(j);
+                if (candidate.toString().equals(canonical.toString())) {
+                    expr.set(j, canonical);
+                }
+            }
+        }
+    }
+
+    private static void concatAdjacentLiterals(List<Formatter> expr) {
         int size = expr.size();
         if (size > 1) {
             int last = size - 1;
