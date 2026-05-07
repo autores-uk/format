@@ -409,14 +409,21 @@ class FormatExpressionTest {
 
     @Test
     void caseHandling() {
-        String[] tests = {
-          "{0,NUMBER}", "{0,NUMBER,COMPACT_LONG}",
-        };
+        {
+            String[] tests = {
+                    "{0,NUMBER}", "{0,NUMBER,COMPACT_LONG}",
+            };
 
-        for (var t : tests) {
-            Object[] args = {10_000_000_000L};
-            var expected = new MessageFormat(t, Locale.ENGLISH).format(args);
-            var actual = FormatExpression.parse(t).format(Locale.ENGLISH, args);
+            for (var t : tests) {
+                Object[] args = {10_000_000_000L};
+                var expected = new MessageFormat(t, Locale.ENGLISH).format(args);
+                var actual = FormatExpression.parse(t).format(Locale.ENGLISH, args);
+                assertEquals(expected, actual);
+            }
+        }
+        {
+            var expected = "{0,DTF_DATE}";
+            var actual = FormatExpression.parse("{0,DTF_DATE}").toString();
             assertEquals(expected, actual);
         }
     }
