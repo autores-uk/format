@@ -21,6 +21,7 @@ System.out.println(result);
  - Immutable, thread-safe parsed expressions
  - Supports JDK23 expressions at lower JDK versions
  - Exposes more parsed expression metadata
+ - Can test compatibility of localized messages
 
 ## Implementation Notes
 

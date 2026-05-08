@@ -20,6 +20,7 @@ import static java.util.Objects.requireNonNull;
  *     <li>Immutable &amp; thread safe</li>
  *     <li>Supports JDK23 expressions at lower JDK versions</li>
  *     <li>Exposes more parsed expression metadata</li>
+ *     <li>Can test compatibility of localized messages</li>
  * </ul>
  */
 public final class FormatExpression extends Formatter implements Iterable<Formatter> {
