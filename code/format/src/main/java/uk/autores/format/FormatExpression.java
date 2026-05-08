@@ -13,7 +13,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * <p>
- *     Type that approximates the behaviour of {@link MessageFormat}.
+ *     Type that approximates the behavior of {@link MessageFormat}.
  * </p>
  * Features:
  * <ul>
@@ -181,7 +181,13 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     }
 
     /**
-     * Estimates the length of the evaluated expression.
+     * <p>
+     *     Estimates the length of the evaluated expression.
+     * </p>
+     * <p>
+     *     Do not invoke repeatedly to estimate buffer sizes at runtime.
+     *     This method allocates objects.
+     * </p>
      *
      * @param l locale
      * @return suggested string buffer size
@@ -687,7 +693,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         /**
          * Informational.
          *
-         * @return human readable text
+         * @return human-readable text
          */
         @Override
         public String toString() {
