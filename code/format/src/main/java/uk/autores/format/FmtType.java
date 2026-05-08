@@ -120,13 +120,13 @@ public enum FmtType {
      */
     LIST(Lists::format, "list", List.class, FmtStyle.NONE, FmtStyle.OR, FmtStyle.UNIT);
 
-    private final Fmt fn;
-    private final String label;
-    private final Class<?> argType;
-    private final Set<FmtStyle> styles;
+    final Fmt formatter;
+    final String label;
+    final Class<?> argType;
+    final Set<FmtStyle> styles;
 
-    FmtType(Fmt fn, String label, Class<?> argType, FmtStyle... styles) {
-        this.fn = fn;
+    FmtType(Fmt formatter, String label, Class<?> argType, FmtStyle... styles) {
+        this.formatter = formatter;
         this.label = label;
         this.argType = argType;
         this.styles = EnumSet.copyOf(asList(styles));
@@ -162,9 +162,5 @@ public enum FmtType {
      */
     public Set<FmtStyle> styles() {
         return EnumSet.copyOf(styles);
-    }
-
-    Fmt formatter() {
-        return fn;
     }
 }

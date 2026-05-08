@@ -92,7 +92,7 @@ public final class FormatVariable extends Formatter {
      */
     @Override
     public void formatTo(Locale l, StringBuffer buf,  Object... args) {
-        type.formatter().format(l, this, buf, args);
+        type.formatter.format(l, this, buf, args);
     }
 
     @Override

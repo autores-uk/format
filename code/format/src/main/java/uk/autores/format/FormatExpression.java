@@ -132,7 +132,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             if (segment instanceof FormatVariable v) {
                 results[v.index()] = (v.type() == FmtType.NONE)
                         ? narrowType(v)
-                        : v.type().argType();
+                        : v.type().argType;
             }
         }
         return results;
@@ -144,7 +144,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
                     && segment instanceof FormatVariable v
                     && v.index() == current.index()
                     && v.type() != FmtType.NONE) {
-                return v.type().argType();
+                return v.type().argType;
             }
         }
         return Object.class;
@@ -396,7 +396,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
             }
         }
         FmtType type = detectType(sequence, typeOffset);
-        int next = typeOffset + type.label().length();
+        int next = typeOffset + type.label.length();
         if (next >= sequence.length()) {
             throw new IllegalArgumentException("Expected character at index " + next);
         }
@@ -436,12 +436,12 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     }
 
     private static int longestFirst(FmtType a, FmtType b) {
-        return b.label().length() - a.label().length();
+        return b.label.length() - a.label.length();
     }
 
     private static FmtType detectType(CharSequence sequence, int offset) {
         for (FmtType type : NAMED_FMT_TYPES) {
-            if (matches(sequence, offset, type.label())) {
+            if (matches(sequence, offset, type.label)) {
                 return type;
             }
         }
@@ -449,7 +449,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
     }
 
     private static FmtStyle detectStyle(FmtType type, CharSequence sequence, int offset) {
-        for (FmtStyle s : type.styles()) {
+        for (FmtStyle s : type.styles) {
             if (s == FmtStyle.NONE || s == FmtStyle.SUBFORMAT) {
                 continue;
             }
