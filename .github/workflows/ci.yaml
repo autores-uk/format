@@ -5,7 +5,7 @@ permissions:
   pages: write
   id-token: write
 jobs:
-  build:
+  test-jdk23:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -17,7 +17,7 @@ jobs:
           cache: 'maven'
       - name: Package with Maven
         run: mvn --file code/format/pom.xml --batch-mode --update-snapshots verify
-  compile:
+  compile-jdk17:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
