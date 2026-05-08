@@ -33,6 +33,12 @@ public sealed abstract class Formatter permits FormatVariable, FormatExpression,
         return buf.toString();
     }
 
+    /**
+     * Equality is based on the {@link #toString()} value.
+     *
+     * @param obj   other
+     * @return true if this is a Formatter with the same string value
+     */
     @Override
     public final boolean equals(Object obj) {
         return obj instanceof Formatter other
