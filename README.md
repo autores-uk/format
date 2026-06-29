@@ -42,6 +42,8 @@ Published artifacts can be found in the
 
 Version numbers follow a *JDK.Major.Minor* scheme.
 
+[![MvnRepository](https://badges.mvnrepository.com/badge/uk.autores/format/badge.svg?label=MvnRepository)](https://mvnrepository.com/artifact/uk.autores/format)
+
 ## Building
 
 Source and target are JDK17.
