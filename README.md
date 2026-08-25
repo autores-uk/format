@@ -1,6 +1,7 @@
 [![Build](https://github.com/autores-uk/format/actions/workflows/ci.yaml/badge.svg)](https://github.com/autores-uk/format/actions/workflows/ci.yaml)
 [![Document](https://github.com/autores-uk/format/actions/workflows/docs.yaml/badge.svg)](https://github.com/autores-uk/format/actions/workflows/docs.yaml)
 [![javadoc](https://javadoc.io/badge2/uk.autores/format/javadoc.svg)](https://javadoc.io/doc/uk.autores/format)
+[![MvnRepository](https://badges.mvnrepository.com/badge/uk.autores/format/badge.svg?label=MvnRepository)](https://mvnrepository.com/artifact/uk.autores/format)
 
 # AutoRes Format
 
@@ -41,8 +42,6 @@ Published artifacts can be found in the
 [Maven Central Repository](https://central.sonatype.com/artifact/uk.autores/format).
 
 Version numbers follow a *JDK.Major.Minor* scheme.
-
-[![MvnRepository](https://badges.mvnrepository.com/badge/uk.autores/format/badge.svg?label=MvnRepository)](https://mvnrepository.com/artifact/uk.autores/format)
 
 ## Building
 
