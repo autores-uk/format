@@ -86,7 +86,17 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      */
     @Override
     public String toString() {
-        return Chars.concat(expr);
+        if (expr.length == 0) {
+            return "";
+        }
+        if (expr.length == 1) {
+            return expr[0].toString();
+        }
+        var buf = new StringBuilder(8 * expr.length);
+        for (var o : expr) {
+            buf.append(o);
+        }
+        return buf.toString();
     }
 
     /**
