@@ -61,7 +61,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * <h4>Lists</h4>
      * <p>
      *     Variables of type "list" require a JDK22+ runtime.
-     *     {@link Object} arrays may be used as arguments.
+     *     Object arrays may be used as arguments.
      * </p>
      *
      * @param l    the locale
