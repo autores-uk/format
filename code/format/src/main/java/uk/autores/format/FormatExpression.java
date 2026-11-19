@@ -42,7 +42,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * </p>
      * <p>
      *     Generally the expected types are defined by {@link FmtType#argType()}.
-     *     {@link Object[]} arrays can be used for {@link FmtType#LIST}.
+     *     Object arrays can be used for {@link FmtType#LIST}.
      * </p>
      * <h4>Dates &amp; Times</h4>
      * <p>
@@ -61,7 +61,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * <h4>Lists</h4>
      * <p>
      *     Variables of type "list" require a JDK22+ runtime.
-     *     {@link Object} arrays may be used as arguments.
+     *     Object arrays may be used as arguments.
      * </p>
      *
      * @param l    the locale
