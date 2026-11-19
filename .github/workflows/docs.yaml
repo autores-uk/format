@@ -36,6 +36,7 @@ jobs:
           java-version: '27'
           distribution: 'temurin'
           cache: 'maven'
+          cache-dependency-path: 'code/format/pom.xml'
       - name: Package with Maven
         run: mvn --file code/format/pom.xml --batch-mode install
       - name: Setup Pages
