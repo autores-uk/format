@@ -42,7 +42,7 @@ public final class FormatExpression extends Formatter implements Iterable<Format
      * </p>
      * <p>
      *     Generally the expected types are defined by {@link FmtType#argType()}.
-     *     {@link Object[]} arrays can be used for {@link FmtType#LIST}.
+     *     Object arrays can be used for {@link FmtType#LIST}.
      * </p>
      * <h4>Dates &amp; Times</h4>
      * <p>
