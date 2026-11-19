@@ -15,6 +15,7 @@ jobs:
           java-version: '23'
           distribution: 'temurin'
           cache: 'maven'
+          cache-dependency-path: 'code/format/pom.xml'
       - name: Package with Maven
         run: mvn --file code/format/pom.xml --batch-mode --update-snapshots verify
   compile-jdk17:
@@ -27,6 +28,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
+          cache-dependency-path: 'code/format/pom.xml'
       - name: Package with Maven
         run: mvn --file code/format/pom.xml --batch-mode --update-snapshots compile
 
