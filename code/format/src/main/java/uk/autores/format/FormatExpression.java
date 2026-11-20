@@ -92,7 +92,11 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         if (expr.length == 1) {
             return expr[0].toString();
         }
-        var buf = new StringBuilder(8 * expr.length);
+        var len = 0;
+        for (var o : expr) {
+            len += o.toString().length();
+        }
+        var buf = new StringBuilder(len);
         for (var o : expr) {
             buf.append(o);
         }
