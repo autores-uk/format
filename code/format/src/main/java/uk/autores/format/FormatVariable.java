@@ -10,14 +10,8 @@ import java.util.stream.IntStream;
  * Represents indexed variable expression like <code>{1,number,currency}</code>.
  */
 public final class FormatVariable extends Formatter {
-    private static final FormatVariable[] INTERNED = IntStream.range(0, 5)
-            .mapToObj(FormatVariable::intern)
-            .toArray(FormatVariable[]::new);
+    private static final FormatVariable[] INTERNED;
 
-    private static FormatVariable intern(int index) {
-        return new FormatVariable("{" + index + "}", index, FmtType.NONE, FmtStyle.NONE, "");
-    }
-    
     static {
         var list = new ArrayList<FormatVariable>();
         var types = FmtType.values();
@@ -33,6 +27,7 @@ public final class FormatVariable extends Formatter {
                 buf.delete(0, buf.length());
             }
         }
+        INTERNED = list.toArray(new FormatVariable[0]);
     }
     
     private final String raw;
