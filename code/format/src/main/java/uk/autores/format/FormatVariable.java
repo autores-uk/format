@@ -29,7 +29,7 @@ public final class FormatVariable extends Formatter {
                     buf.append(',').append(ft.label());
                 }
                 buf.append('}');
-                list.add(new FormatVariable(buf, i, ft, FmtStyle.NONE, ""));
+                list.add(new FormatVariable(buf.toString(), i, ft, FmtStyle.NONE, ""));
                 buf.delete(0, buf.length());
             }
         }
