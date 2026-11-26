@@ -99,8 +99,9 @@ public final class FormatExpression extends Formatter implements Iterable<Format
         var buf = new char[len];
         int offset = 0;
         for (var o : expr) {
-            var s = expr.toString();
-            for (int i = 0, l = s.length(); i < l; i++) {
+            var s = o.toString();
+            int l = s.length();
+            for (int i = 0; i < l; i++) {
                 buf[offset++] = s.charAt(i);
             }
         }
