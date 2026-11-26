@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 package uk.autores.format;
 
+import java.util.ArrayList;
 import java.util.Locale;
 import java.util.stream.IntStream;
 
@@ -9,10 +10,26 @@ import java.util.stream.IntStream;
  * Represents indexed variable expression like <code>{1,number,currency}</code>.
  */
 public final class FormatVariable extends Formatter {
-    private static final FormatVariable[] INTERNED = IntStream.range(0, 5)
-            .mapToObj(FormatVariable::intern)
-            .toArray(FormatVariable[]::new);
+    private static final FormatVariable[] INTERNED;
 
+    static {
+        var list = new ArrayList<FormatVariable>();
+        var types = FmtType.values();
+        var buf = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            for (var ft : types) {
+                buf.append('{').append(i);
+                if (ft != FmtType.NONE) {
+                    buf.append(',').append(ft.label());
+                }
+                buf.append('}');
+                list.add(new FormatVariable(buf.toString(), i, ft, FmtStyle.NONE, ""));
+                buf.delete(0, buf.length());
+            }
+        }
+        INTERNED = list.toArray(new FormatVariable[0]);
+    }
+    
     private final String raw;
     private final int index;
     private final FmtType type;
@@ -25,10 +42,6 @@ public final class FormatVariable extends Formatter {
         this.type = type;
         this.style = style;
         this.subformat = subformat;
-    }
-
-    private static FormatVariable intern(int index) {
-        return new FormatVariable("{" + index + "}", index, FmtType.NONE, FmtStyle.NONE, "");
     }
 
     static FormatVariable from(String raw, int index, FmtType type, FmtStyle style, String subformat) {
